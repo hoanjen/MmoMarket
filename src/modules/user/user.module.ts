@@ -7,11 +7,9 @@ import { Password } from './entity/password.entity';
 import { Role } from './entity/role.entity';
 
 @Module({
-  imports :[TypeOrmModule.forFeature([
-    User, Password, Role
-  ])],
+  imports: [TypeOrmModule.forFeature([User, Password, Role])],
   controllers: [UserController],
-  providers: [UserService] ,
-  exports :[UserService]
+  providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

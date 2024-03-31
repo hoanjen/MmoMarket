@@ -8,25 +8,28 @@ import {
   JoinColumn,
   Column,
 } from 'typeorm';
-import { IsEnum } from 'class-validator';
-import { USER_ROLE } from '../user.constant';
-import { User } from './user.entity';
+import { User } from 'src/modules/user/entity/user.entity';
 
-export const ROLE_MODEL = 'role';
+export const MAIL_MODEL = 'otp';
 
-@Entity(ROLE_MODEL)
-export class Role {
+@Entity(MAIL_MODEL)
+export class Otp {
   @PrimaryColumn({ type: 'uuid' })
   @Generated('uuid')
   id: string;
 
-  @Column({ type: 'enum', default: USER_ROLE.USER, enum: USER_ROLE })
-  @IsEnum(USER_ROLE)
-  name: USER_ROLE;
+  @Column({ nullable: false })
+  mail_type: string;
+
+  @Column({ nullable: false })
+  otp: string;
 
   @OneToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({ nullable: false })
+  expired: Date; // time expired
 
   @CreateDateColumn()
   created_at: Date; // Creation date

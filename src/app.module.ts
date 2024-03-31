@@ -8,6 +8,7 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfigExport } from './config/database/database.config';
 import { AuthModule } from './modules/auth/auth.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthModule } from './modules/auth/auth.module';
     TypeOrmModule.forRoot(DatabaseConfigExport),
     UserModule,
     AuthModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

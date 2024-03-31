@@ -10,7 +10,8 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+
+export class SignInDto {
   @ApiProperty({
     example: 'aelgbg@gmail.com',
   })
@@ -20,4 +21,13 @@ export class CreateUserDto {
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   readonly email: string;
+
+  @ApiProperty({
+    example: 'password@123',
+  })
+  @IsString()
+  @MinLength(6)
+  @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  readonly password: string;
 }

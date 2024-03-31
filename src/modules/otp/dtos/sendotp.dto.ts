@@ -10,7 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class SendOtpDto {
   @ApiProperty({
     example: 'aelgbg@gmail.com',
   })

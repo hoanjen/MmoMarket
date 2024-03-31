@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm';
 dotenv.config();
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 const DatabaseConfig: DataSourceOptions = {
   type: 'mysql',

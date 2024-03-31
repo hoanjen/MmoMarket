@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { USER_GENDER } from 'src/modules/user/user.constant';
 
-
 export class SignUpDto {
   @ApiProperty({
     example: 'aelgbg@gmail.com',
@@ -89,7 +88,7 @@ export class SignUpDto {
   })
   @IsEnum(USER_GENDER)
   @IsNotEmpty()
-  readonly gender: string;
+  readonly gender: USER_GENDER;
 
   @ApiProperty({
     example: 'avatar',
