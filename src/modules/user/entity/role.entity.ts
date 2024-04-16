@@ -12,7 +12,7 @@ import { IsEnum } from 'class-validator';
 import { USER_ROLE } from '../user.constant';
 import { User } from './user.entity';
 
-export const ROLE_MODEL = 'role';
+export const ROLE_MODEL = 'roles';
 
 @Entity(ROLE_MODEL)
 export class Role {

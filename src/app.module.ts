@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfigExport } from './config/database/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OtpModule } from './modules/otp/otp.module';
     UserModule,
     AuthModule,
     OtpModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
 
-export const MAIL_MODEL = 'otp';
+export const MAIL_MODEL = 'otps';
 
 @Entity(MAIL_MODEL)
 export class Otp {

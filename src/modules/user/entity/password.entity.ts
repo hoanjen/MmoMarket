@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-export const PASSWORD_MODEL = 'password';
+export const PASSWORD_MODEL = 'passwords';
 
 @Entity(PASSWORD_MODEL)
 export class Password {
