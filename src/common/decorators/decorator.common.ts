@@ -6,7 +6,7 @@ export enum Role {
   Admin = 'admin',
 }
 
-export const UseRole = createParamDecorator(
+export const User = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user;
@@ -16,3 +16,7 @@ export const UseRole = createParamDecorator(
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
+
+
+export const IS_PUBLIC_KEY = 'isPublic';
+export const IsPublic = () => SetMetadata(IS_PUBLIC_KEY, true);

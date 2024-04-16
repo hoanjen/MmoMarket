@@ -40,6 +40,8 @@ export class OtpService {
       throw new BadRequestException('Otp is not correct ! or expired');
     }
 
+    await this.otpRepository.delete(otpEnity);
+
     return ReturnCommon({
       statusCode: HttpStatus.ACCEPTED,
       status: EResponse.SUCCESS,

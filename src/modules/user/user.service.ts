@@ -27,14 +27,17 @@ export class UserService {
     return this.userRepository.findOne({
       where: { id },
     });
+    const query = 'select * from user where id ';
+    await this.dataSource.query(query);
   }
 
-  async getHashPassword(email: string){
-    const user = await this.userRepository.findOne({where:{email}});
+  async getHashPassword(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
     const id = user.id;
-    const pass = await this.passwordRepository.createQueryBuilder('pass')
-    .where('user_id = :id', {id})
-    .getOne();
+    const pass = await this.passwordRepository
+      .createQueryBuilder('pass')
+      .where('user_id = :id', { id })
+      .getOne();
     const hashPassword = pass.password;
     console.log(hashPassword);
     return hashPassword;
@@ -60,9 +63,13 @@ export class UserService {
       avatar,
       dob,
     } = signUpInput;
-    const checkUserExisted = await this.userRepository.createQueryBuilder('user')
-    .where('user.email = :email OR user.phone_number = :phone_number', {email, phone_number})
-    .getOne();
+    const checkUserExisted = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email OR user.phone_number = :phone_number', {
+        email,
+        phone_number,
+      })
+      .getOne();
 
     if (checkUserExisted) {
       throw new BadRequestException('User existed');
