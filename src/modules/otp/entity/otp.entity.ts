@@ -7,12 +7,13 @@ import {
   OneToOne,
   JoinColumn,
   Column,
+  ManyToOne,
 } from 'typeorm';
 import { User } from 'src/modules/user/entity/user.entity';
 
-export const MAIL_MODEL = 'otps';
+export const OTP_MODEL = 'otps';
 
-@Entity(MAIL_MODEL)
+@Entity(OTP_MODEL)
 export class Otp {
   @PrimaryColumn({ type: 'uuid' })
   @Generated('uuid')
@@ -24,7 +25,10 @@ export class Otp {
   @Column({ nullable: false })
   otp: string;
 
-  @OneToOne(() => User, (user) => user.id)
+  @Column('string', { nullable: true })
+  user_id: string;
+
+  @ManyToOne(() => User, (user) => user.otp, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

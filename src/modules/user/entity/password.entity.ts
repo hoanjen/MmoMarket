@@ -18,7 +18,10 @@ export class Password {
   @Generated('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  @Column('string', {nullable: true})
+  user_id: string;
+
+  @OneToOne(() => User, (user) => user.password)
   @JoinColumn({ name: 'user_id' })
   user: User;
 

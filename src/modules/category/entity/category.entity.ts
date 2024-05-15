@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { CategoryType } from './category-type.entity';
 
-export const CATEGORY_MODEL = 'category_types';
+export const CATEGORY_MODEL = 'categorys';
 
 @Entity(CATEGORY_MODEL)
 export class Category {

@@ -44,7 +44,7 @@ async function bootstrap() {
 
   //pipe + filter
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({transform: true}));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(configService.get<number>('app.port'));
