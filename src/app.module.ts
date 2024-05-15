@@ -10,6 +10,10 @@ import { DatabaseConfigExport } from './config/database/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { OrderModule } from './modules/order/order.module';
+
 
 @Module({
   imports: [
@@ -33,6 +37,9 @@ import { CategoryModule } from './modules/category/category.module';
     AuthModule,
     OtpModule,
     CategoryModule,
+    ProductModule,
+    UploadModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

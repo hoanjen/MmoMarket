@@ -13,7 +13,7 @@ import { USER_GENDER } from 'src/modules/user/user.constant';
 
 export class SignUpDto {
   @ApiProperty({
-    example: 'aelgbg@gmail.com',
+    example: 'lew2k3@gmail.com',
   })
   @IsEmail()
   @IsNotEmpty()
@@ -67,6 +67,7 @@ export class SignUpDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   readonly username: string;
 
+  
   @ApiProperty({
     example: '0929329992',
   })

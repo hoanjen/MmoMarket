@@ -13,7 +13,7 @@ import {
 
 export class SignInDto {
   @ApiProperty({
-    example: 'aelgbg@gmail.com',
+    example: 'lew2k3@gmail.com',
   })
   @IsEmail()
   @IsNotEmpty()

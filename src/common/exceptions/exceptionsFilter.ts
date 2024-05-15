@@ -8,6 +8,7 @@ import {
 import { Response, Request } from 'express';
 import { EResponse } from '../interface.common';
 
+
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {

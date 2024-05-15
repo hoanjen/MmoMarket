@@ -15,6 +15,9 @@ import {
 import { USER_GENDER } from '../user.constant';
 import { Password } from './password.entity';
 import { Role } from './role.entity';
+import { Otp } from 'src/modules/otp/entity/otp.entity';
+import { Product } from 'src/modules/product/entity/product.entity';
+import { Order } from 'src/modules/order/entity/order.entity';
 
 export const USER_MODEL = 'users';
 
@@ -70,11 +73,20 @@ export class User {
   @Column({ nullable: true })
   cover_image: string;
 
-  @OneToOne(() => Role, (role) => role.user) // specify inverse side as a second parameter
-  role: Role;
+  @OneToMany(() => Role, (role) => role.user) // specify inverse side as a second parameter
+  role: Role[];
 
   @OneToOne(() => Password, (password) => password.user) // specify inverse side as a second parameter
   password: Password;
+
+  @OneToMany(() => Product, (product) => product.user)
+  products: Product[];
+
+  @OneToMany(() => Otp, (otp) => otp.user)
+  otp: Otp;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date

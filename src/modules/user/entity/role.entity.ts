@@ -7,6 +7,8 @@ import {
   OneToOne,
   JoinColumn,
   Column,
+  ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 import { IsEnum } from 'class-validator';
 import { USER_ROLE } from '../user.constant';
@@ -24,9 +26,12 @@ export class Role {
   @IsEnum(USER_ROLE)
   name: USER_ROLE;
 
-  @OneToOne(() => User, (user) => user.id)
+  @Column('string', { nullable: true })
+  user_id: string;
+
+  @ManyToOne(() => User, (user) => user.role, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: User | string;
 
   @CreateDateColumn()
   created_at: Date; // Creation date

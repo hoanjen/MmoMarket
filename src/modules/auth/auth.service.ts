@@ -6,7 +6,6 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
-import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
@@ -32,7 +31,7 @@ export class AuthService {
     if(!checkpass){
       throw new BadRequestException('email or password invalid !');
     }
-    const payload = { sub: user.id, type: 'accessToken' , username: user.username , role: user.role};
+    const payload = { sub: user.id, type: 'accessToken' , username: user.username};
     const access_token = await this.jwtService.signAsync({ payload });
     const refresh_token = await this.jwtService.signAsync({
       ...payload,

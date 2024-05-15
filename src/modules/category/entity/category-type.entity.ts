@@ -11,10 +11,12 @@ import {
 } from 'typeorm';
 
 import { Category } from './category.entity';
+import { Product } from 'src/modules/product/entity/product.entity';
 
-export const SUBCATEGORY_MODEL = 'category_types';
 
-@Entity(SUBCATEGORY_MODEL)
+export const CATEGORY_TYPE_MODEL = 'category_types';
+
+@Entity(CATEGORY_TYPE_MODEL)
 export class CategoryType {
   @PrimaryColumn({ type: 'uuid' })
   @Generated('uuid')
@@ -23,9 +25,18 @@ export class CategoryType {
   @Column({ nullable: false })
   name: string;
 
-  @ManyToOne(() => Category, (category) => category.category_types)
+  @Column('string', { nullable: true })
+  category_id: string;
+
+  @ManyToOne(() => Category, (category) => category.category_types, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @JoinColumn({ name: 'category_id' })
-  category: Category;
+  category?: Category;
+
+  @OneToMany(() => Product, (product) => product.category_type)
+  products?: Product[];
 
   @CreateDateColumn()
   created_at: Date;
