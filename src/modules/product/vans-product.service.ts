@@ -91,19 +91,16 @@ export class VansProductService {
     queryRunner: QueryRunner,
     newOrderDetail: Array<any>,
   ) {
-   await Promise.all(
+    await Promise.all(
       vansProducts.map((item, index) => {
         const quantity = item.quantity - newOrderDetail[index].quantity;
         item.quantity = quantity;
         return queryRunner.manager.save(item);
-      })
+      }),
     );
-
-   
   }
 
-  async getDataProduct(itemsBuy: Array<any>) {
-    //thiếu update quantity + thêm queryRunner vào đây
+  async getDataProduct(itemsBuy: Array<any>, queryRunner: QueryRunner) {
     const promiseList = [];
     const totalQuantity = itemsBuy.reduce((total, current) => {
       const promise = this.dataProductRepository.find({
@@ -117,14 +114,14 @@ export class VansProductService {
       promiseList.push(promise);
       return total + parseInt(current.quantity);
     }, 0);
-    const a = await Promise.all(promiseList);
-    const data_products = a.flat();
-    if (data_products.length !== totalQuantity) {
+    const data_products = await Promise.all(promiseList);
+    const data_products_flat = data_products.flat();
+    if (data_products_flat.length !== totalQuantity) {
       throw new BadRequestException('data_products sold out');
     }
-    await this.dataProductRepository.update(data_products, {
+    await queryRunner.manager.update(DataProduct, data_products_flat, {
       status: StatusProductSale.SOLD,
     });
-    return data_products;
+    return data_products_flat;
   }
 }
