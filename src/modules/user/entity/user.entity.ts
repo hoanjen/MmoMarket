@@ -53,6 +53,9 @@ export class User {
   @Column({ nullable: false })
   google_id: string;
 
+  @Column({ nullable: true })
+  balance: number;
+
   @Column()
   @Transform(({ value }) =>
     typeof value === 'string' ? new Date(value) : value,

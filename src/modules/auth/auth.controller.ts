@@ -17,8 +17,7 @@ import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
-
-  @ApiBearerAuth()
+  @IsPublic()
   @ApiOperation({ summary: 'Signup' })
   @Post('sign-up')
   async signUp(@Body() signUpInput: SignUpDto) {

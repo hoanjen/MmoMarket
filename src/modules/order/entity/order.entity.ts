@@ -14,7 +14,7 @@ export class Order {
   @Column({ nullable: false })
   user_id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   discount_id: string;
 
   @ManyToOne(() => User, (user) => user.orders)
