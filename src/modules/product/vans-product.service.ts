@@ -1,7 +1,7 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVansProductDto } from './dtos/create-vans-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, QueryRunner, Repository } from 'typeorm';
 import { VANS_PRODUCT_MODEL, VansProduct } from './entity/vans-product.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
@@ -22,11 +22,11 @@ export class VansProductService {
     private readonly dataProductRepository: Repository<DataProduct>,
   ) {}
 
-  async getVansProduct(getVansProductInput: string) {
-    const vans_product_id = getVansProductInput;
+  async getVansProduct(getVansProductInput: Array<string>) {
+    const vans_product_ids = getVansProductInput;
 
-    const vansProduct = this.vansProductRepository.findOne({
-      where: { id: vans_product_id },
+    const vansProduct = this.vansProductRepository.find({
+      where: { id: In(vans_product_ids) },
     });
     return vansProduct;
   }
@@ -36,7 +36,7 @@ export class VansProductService {
     const isProduct = await this.productRepository.findOne({
       where: { id: product_id },
     });
-    console.log(isProduct);
+
     if (!isProduct) {
       throw new BadRequestException('product not exist!');
     }
@@ -86,19 +86,45 @@ export class VansProductService {
     });
   }
 
-  async updateQuantityDataProduct(vans_product_id: string) {
-    const vansProduct = await this.vansProductRepository.findOne({
-      where: { id: vans_product_id },
-    });
-    const dataProductList = await this.dataProductRepository
-      .createQueryBuilder(DATA_PRODUCT_MODEL)
-      .where('id =:id & status =:status', {
-        id: vans_product_id,
-        status: StatusProductSale.NOTSOLD,
+  async updateQuantityDataProduct(
+    vansProducts: Array<any>,
+    queryRunner: QueryRunner,
+    newOrderDetail: Array<any>,
+  ) {
+   await Promise.all(
+      vansProducts.map((item, index) => {
+        const quantity = item.quantity - newOrderDetail[index].quantity;
+        item.quantity = quantity;
+        return queryRunner.manager.save(item);
       })
-      .getMany();
-    vansProduct.quantity = dataProductList.length;
-    await this.vansProductRepository.save(vansProduct);
+    );
 
+   
+  }
+
+  async getDataProduct(itemsBuy: Array<any>) {
+    //thiếu update quantity + thêm queryRunner vào đây
+    const promiseList = [];
+    const totalQuantity = itemsBuy.reduce((total, current) => {
+      const promise = this.dataProductRepository.find({
+        where: {
+          status: StatusProductSale.NOTSOLD,
+          vans_product_id: current.vans_product_id,
+        },
+        relations: { vans_product: true },
+        take: current.quantity,
+      });
+      promiseList.push(promise);
+      return total + parseInt(current.quantity);
+    }, 0);
+    const a = await Promise.all(promiseList);
+    const data_products = a.flat();
+    if (data_products.length !== totalQuantity) {
+      throw new BadRequestException('data_products sold out');
+    }
+    await this.dataProductRepository.update(data_products, {
+      status: StatusProductSale.SOLD,
+    });
+    return data_products;
   }
 }

@@ -51,7 +51,6 @@ export class UserService {
       .where('user_id = :id', { id })
       .getOne();
     const hashPassword = pass.password;
-    console.log(hashPassword);
     return hashPassword;
   }
 
@@ -109,7 +108,7 @@ export class UserService {
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({
-        user,
+        user_id: user.id,
         password: hashPassword,
       });
       await queryRunner.manager.save(newPassword);
