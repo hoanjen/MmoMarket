@@ -26,6 +26,8 @@ async function bootstrap() {
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:8000',
+    'https://mmomarket.onrender.com',
+    'https://mmomarket.onrender.com/api',
   ];
 
   app.enableCors({
@@ -44,7 +46,7 @@ async function bootstrap() {
 
   //pipe + filter
 
-  app.useGlobalPipes(new ValidationPipe({transform: true}));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(configService.get<number>('app.port'));
