@@ -67,6 +67,7 @@ export class OrderService {
 
       const data_products = await this.vansProductService.getDataProduct(
         orders,
+        queryRunner,
       );
       
       const newOrder = this.orderRepository.create({
