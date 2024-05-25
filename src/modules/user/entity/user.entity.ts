@@ -32,31 +32,31 @@ export class User {
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   full_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   first_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   last_name: string;
 
   @Column({ nullable: true })
   middle_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   username: string;
 
   @Column({ nullable: false })
   phone_number: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   google_id: string;
 
   @Column({ nullable: true })
   balance: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Transform(({ value }) =>
     typeof value === 'string' ? new Date(value) : value,
   )
