@@ -43,6 +43,7 @@ async function bootstrap() {
     allowedHeaders:
       'Origin, X-CSRF-TOKEN, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, channel, request-id, Authorization, x-custom-lang ,',
     methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS,PATCH',
+    
   });
 
   //pipe + filter

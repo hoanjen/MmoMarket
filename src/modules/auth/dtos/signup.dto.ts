@@ -8,6 +8,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  isNotEmpty,
 } from 'class-validator';
 import { USER_GENDER } from 'src/modules/user/user.constant';
 
@@ -35,7 +36,7 @@ export class SignUpDto {
     example: 'first name',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(20)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   readonly first_name: string;
@@ -44,7 +45,7 @@ export class SignUpDto {
     example: 'last name',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(20)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   readonly last_name: string;
@@ -61,13 +62,12 @@ export class SignUpDto {
   @ApiProperty({
     example: 'username',
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(20)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   readonly username: string;
 
-  
   @ApiProperty({
     example: '0929329992',
   })
@@ -81,14 +81,13 @@ export class SignUpDto {
     example: '2001-02-03',
   })
   // @IsDob()
-  @IsNotEmpty()
   readonly dob: string;
 
   @ApiProperty({
     example: USER_GENDER.MALE,
   })
+  @IsOptional()
   @IsEnum(USER_GENDER)
-  @IsNotEmpty()
   readonly gender: USER_GENDER;
 
   @ApiProperty({
