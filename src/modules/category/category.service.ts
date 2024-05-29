@@ -71,7 +71,6 @@ export class CategoryService {
 
   async createCategory(createCategoryInput: CreateCategoryDto) {
     const { name } = createCategoryInput;
-    console.log(1111);
     const newCategory = this.categoryRepository.create({ name });
 
     await this.categoryRepository.save(newCategory);

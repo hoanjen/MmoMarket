@@ -9,6 +9,7 @@ import { GetProductOfCategoryTypeDto } from '../category/dtos/get-product-of-cat
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UserService } from '../user/user.service';
 import { CategoryService } from '../category/category.service';
+import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
 
 @Injectable()
 export class ProductService {
@@ -56,7 +57,7 @@ export class ProductService {
     const categoryType = await this.categoryService.findCategoryTypeById(
       category_type_id,
     );
-    if(!categoryType){
+    if (!categoryType) {
       throw new BadRequestException('category_type_id not found !');
     }
 
@@ -72,5 +73,27 @@ export class ProductService {
         newProduct,
       },
     });
+  }
+
+  async getProductWithCategoryId(getProductWithCategoryIdInput: GetProductWithCategoryTypeIdDto){
+    const {categorytype_id, limit, page} = getProductWithCategoryIdInput;
+    let results;
+    if(limit && page){
+      const skip = (page-1)*limit;
+      results = await this.productRepository.find({where: {category_type_id: categorytype_id},
+      take: limit,
+      skip:skip
+      });
+    }
+    else{
+      results = await this.productRepository.find({where: {category_type_id: categorytype_id}})
+
+    }
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      message: 'Get product success !!',
+      data: results
+    })
   }
 }

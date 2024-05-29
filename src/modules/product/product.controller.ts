@@ -4,6 +4,8 @@ import { IsPublic } from 'src/common/decorators/decorator.common';
 import { ProductService } from './product.service';
 import { GetProductDto } from './dtos/get-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
+import { GetProductOfCategoryTypeDto } from '../category/dtos/get-product-of-categorytype.dto';
+import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
 
 
 @ApiTags('Product')
@@ -16,6 +18,17 @@ export class ProductController {
   @Get()
   async product(@Query() getProductInput: GetProductDto) {
     return this.productService.getProduct(getProductInput);
+  }
+
+  @IsPublic()
+  @ApiOperation({ summary: 'Get Product by categorytype_id' })
+  @Get('/categoryType')
+  async productOfCategoryType(
+    @Query() getProductWithCategoryIdInput: GetProductWithCategoryTypeIdDto,
+  ) {
+    return this.productService.getProductWithCategoryId(
+      getProductWithCategoryIdInput,
+    );
   }
 
   @ApiOperation({ summary: 'Create Product' })

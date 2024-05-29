@@ -14,7 +14,7 @@ import {
 
 export class GetCategoryDto {
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     example: '0df1762f-685d-48af-b646-863ce4303b7d',
     required: false,
@@ -25,6 +25,7 @@ export class GetCategoryDto {
     typeof value === 'number' ? value : parseInt(value),
   )
   @IsNumber()
+  @IsOptional()
   @ApiProperty({
     example: '10',
     required: false,
@@ -35,6 +36,7 @@ export class GetCategoryDto {
     typeof value === 'number' ? value : parseInt(value),
   )
   @IsNumber()
+  @IsOptional()
   @ApiProperty({
     example: '1',
     required: false,
@@ -42,6 +44,7 @@ export class GetCategoryDto {
   readonly page: number;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: 'CategoryType',
     required: false,
