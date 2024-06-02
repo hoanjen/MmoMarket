@@ -77,7 +77,7 @@ export class User {
   cover_image: string;
 
   @OneToMany(() => Role, (role) => role.user) // specify inverse side as a second parameter
-  role: Role[];
+  roles: Role[];
 
   @OneToOne(() => Password, (password) => password.user) // specify inverse side as a second parameter
   password: Password;
@@ -86,7 +86,7 @@ export class User {
   products: Product[];
 
   @OneToMany(() => Otp, (otp) => otp.user)
-  otp: Otp;
+  otps: Otp;
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];

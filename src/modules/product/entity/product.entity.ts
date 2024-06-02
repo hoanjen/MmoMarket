@@ -23,7 +23,9 @@ export class Product {
     this.sub_title = sub_title;
     this.description = description;
     this.image = image;
-    this.quantity_sold = '0';
+    this.quantity_sold = 0;
+    this.minPrice = 1e9;
+    this.maxPrice = 0;
   }
 
   @PrimaryColumn({ type: 'uuid' })
@@ -43,10 +45,16 @@ export class Product {
   image: string;
 
   @Column({ nullable: false })
-  quantity_sold: string;
+  quantity_sold: number;
+
+  @Column({ nullable: false })
+  maxPrice: number;
+
+  @Column({ nullable: false })
+  minPrice: number;
 
   @OneToMany(() => VansProduct, (vansProduct) => vansProduct.product)
-  vans_product: VansProduct[];
+  vans_products: VansProduct[];
 
   @Column('string', { nullable: true })
   category_type_id: string;

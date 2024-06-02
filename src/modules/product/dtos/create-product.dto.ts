@@ -37,10 +37,10 @@ export class CreateProductDto {
   })
   readonly category_type_id: string;
 
-  @IsString()
   @ApiProperty({
-    example:
-      'https://scontent.fhan3-1.fna.fbcdn.net/v/t1.6435-9/72072531_609163749915149_3233622757660950528_n.jpg',
+    example: 'https://www.facebook.com/hoanjennn',
   })
-  image: string;
+  @IsOptional()
+  @Transform(({ value }) => value || null) // To handle file upload
+  readonly image?: string;
 }

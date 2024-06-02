@@ -42,7 +42,7 @@ export class OrderDetail {
   vans_product: VansProduct;
 
   @OneToMany(() => DataProductOrder, (dataProductOrder) => dataProductOrder.order_detail)
-  data_product_order: DataProductOrder[];
+  data_product_orders: DataProductOrder[];
 
   @CreateDateColumn()
   created_at: Date;

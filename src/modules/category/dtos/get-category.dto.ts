@@ -11,43 +11,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { TypeCategory } from '../category.constant';
 
 export class GetCategoryDto {
-  @IsUUID()
-  @IsOptional()
-  @ApiProperty({
-    example: '0df1762f-685d-48af-b646-863ce4303b7d',
-    required: false,
-  })
-  readonly category_id: string;
-
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({
-    example: '10',
-    required: false,
-  })
-  readonly limit: number;
-
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({
-    example: '1',
-    required: false,
-  })
-  readonly page: number;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty({
-    example: 'CategoryType',
-    required: false,
-  })
-  readonly populate: string;
+  
 }

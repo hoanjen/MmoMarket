@@ -15,7 +15,7 @@ export class CategoryTypeController {
   @ApiOperation({ summary: 'Get Category Type' })
   @Get()
   async categoryType(@Query() getCategoryTypeInput: GetCategoryTypeDto) {
-    return this.categoryTypeService.getCategoryType(getCategoryTypeInput);
+    return this.categoryTypeService.getCategoryType();
   }
 
   @ApiBearerAuth()

@@ -37,10 +37,13 @@ export class VansProduct {
   @Column({ nullable: false })
   quantity: number;
 
+  @Column({ nullable: false })
+  quantitySold: number;
+
   @Column('string', { nullable: true })
   product_id: string;
 
-  @ManyToOne(() => Product, (product) => product.vans_product, {
+  @ManyToOne(() => Product, (product) => product.vans_products, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })
@@ -50,7 +53,10 @@ export class VansProduct {
   @JoinColumn({ name: 'product_id' })
   data_products: DataProduct[];
 
-  @OneToMany(() => OrderDetail, (objectrderDetail) => objectrderDetail.vans_product)
+  @OneToMany(
+    () => OrderDetail,
+    (objectrderDetail) => objectrderDetail.vans_product,
+  )
   order_details: OrderDetail[];
 
   @CreateDateColumn()

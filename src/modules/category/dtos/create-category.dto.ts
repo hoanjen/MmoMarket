@@ -9,6 +9,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { TypeCategory } from '../category.constant';
 
 export class CreateCategoryDto {
   @ApiProperty({
@@ -18,4 +19,10 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   readonly name: string;
 
+  @ApiProperty({
+    example: TypeCategory.PRODUCT,
+  })
+  @IsEnum(TypeCategory)
+  @IsNotEmpty()
+  readonly type: TypeCategory;
 }
