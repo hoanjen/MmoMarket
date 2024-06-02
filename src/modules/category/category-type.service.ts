@@ -1,7 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { GetCategoryTypeDto } from './dtos/get-categoryType.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CategoryType } from './entity/category-type.entity';
+import {
+  CATEGORY_TYPE_MODEL,
+  CategoryType,
+} from './entity/category-type.entity';
 import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
@@ -21,32 +24,21 @@ export class CategoryTypeService {
     private readonly categoryRepository: Repository<Category>,
     private readonly categoryService: CategoryService,
   ) {}
-  async getCategoryType(getCategoryTypeInput: GetCategoryTypeDto) {
-    const { limit, page, category_type_id } = getCategoryTypeInput;
-    let results;
-    if (category_type_id) {
-      results = await this.categoryTypeRepository.findOne({
-        where: { id: category_type_id },
-      });
-    } else {
-      const limitNumber = limit;
-      const pageNumber = page;
-      const skip = (pageNumber - 1) * limitNumber;
 
-      results = await this.categoryRepository.find({
-        take: limitNumber,
-        skip: skip,
+  async getCategoryType(category_id?: string, category_type_ids?: string[]) {
+    let query =
+      this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
+
+    if (category_id) {
+      query = query.andWhere('category_types.category_id =: category_id', {
+        category_id,
+      });
+    } else if (category_type_ids?.length) {
+      query = query.andWhere('category_types.id IN :ids', {
+        ids: category_type_ids,
       });
     }
-
-    return ReturnCommon({
-      statusCode: HttpStatus.OK,
-      status: EResponse.SUCCESS,
-      data: {
-        results,
-      },
-      message: 'Get category successfully !!',
-    });
+    return await query.getMany();
   }
 
   async createCategoryType(createCategoryTypeInput: CreateCategoryTypeDto) {
@@ -73,7 +65,7 @@ export class CategoryTypeService {
     const { category_type_id, sortType } = getProductOfCategoryTypeInput;
     let categoryType;
 
-    if(sortType){
+    if (sortType) {
       categoryType = await this.categoryTypeRepository
         .createQueryBuilder('categoryType')
         .where('categoryType.id = :id', { id: category_type_id })
@@ -90,8 +82,7 @@ export class CategoryTypeService {
           'product.id',
         ])
         .getOne();
-    }else{
-
+    } else {
       //sort by quantity sold
       categoryType = await this.categoryTypeRepository
         .createQueryBuilder('categoryType')

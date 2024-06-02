@@ -30,6 +30,7 @@ export class VansProductService {
     });
     return vansProduct;
   }
+
   async createVansProduct(createVansProductInput: CreateVansProductDto) {
     const { title, price, product_id, quantity, description } =
       createVansProductInput;
@@ -40,6 +41,17 @@ export class VansProductService {
     if (!isProduct) {
       throw new BadRequestException('product not exist!');
     }
+
+    if(price > isProduct.maxPrice){
+      isProduct.maxPrice = price;
+      await this.productRepository.save(isProduct);
+    }
+    if(price < isProduct.minPrice){
+      isProduct.minPrice = price;
+      await this.productRepository.save(isProduct);
+    }
+
+
     const newVansProduct = this.vansProductRepository.create({
       title,
       description,

@@ -27,7 +27,7 @@ export class DataProductOrder {
   @Column({ nullable: false })
   data_product_id: string;
 
-  @ManyToOne(() => OrderDetail, (orderDetail) => orderDetail.data_product_order)
+  @ManyToOne(() => OrderDetail, (orderDetail) => orderDetail.data_product_orders)
   @JoinColumn({ name: 'order_detail_id' })
   order_detail: OrderDetail;
 

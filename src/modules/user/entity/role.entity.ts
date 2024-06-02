@@ -29,7 +29,7 @@ export class Role {
   @Column('string', { nullable: true })
   user_id: string;
 
-  @ManyToOne(() => User, (user) => user.role, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.roles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User | string;
 
