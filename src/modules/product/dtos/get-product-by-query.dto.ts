@@ -23,12 +23,12 @@ export class GetProductByQueryDto {
   @IsOptional()
   readonly category_id: string;
 
-  // @ApiProperty({
-  //   required: false,
-  // })
-  // @IsArray()
-  // @IsOptional()
-  // readonly category_type_ids?: Array<string>;
+  @ApiProperty({
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  readonly category_type_ids?: Array<string>;
 
   @ApiProperty({
     example: 'Search with name product',

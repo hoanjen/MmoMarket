@@ -70,6 +70,7 @@ export class ProductService {
       listCategoryType = await this.categoryTypeService.getCategoryType(
         category_id,
       );
+      
       listCategoryTypeId = listCategoryType.map((item) => {
         return item.id;
       });
@@ -78,8 +79,21 @@ export class ProductService {
         null,
         category_type_ids,
       );
+
       listCategoryTypeId = listCategoryType.map((item) => {
         return item.id;
+      });
+    }
+
+    if(!listCategoryTypeId.length){
+      return ReturnCommon({
+        message: 'Not Found Product',
+        data: {
+          listCategoryType,
+          products: [],
+        },
+        statusCode: HttpStatus.OK,
+        status: EResponse.SUCCESS,
       });
     }
 
