@@ -1,5 +1,4 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { GetCategoryTypeDto } from './dtos/get-categoryType.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CATEGORY_TYPE_MODEL,
@@ -14,6 +13,7 @@ import { CreateCategoryTypeDto } from './dtos/create-categorytype.dto';
 import { GetProductOfCategoryTypeDto } from './dtos/get-product-of-categorytype.dto';
 import { Product } from '../product/entity/product.entity';
 import { VansProduct } from '../product/entity/vans-product.entity';
+import { GetCategoryTypeDto } from './dtos/get-categoryType.dto';
 
 @Injectable()
 export class CategoryTypeService {
@@ -25,7 +25,10 @@ export class CategoryTypeService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async getCategoryTypeByOption(category_id?: string, category_type_ids?: string[]) {
+  async getCategoryTypeByOption(
+    category_id?: string,
+    category_type_ids?: string[],
+  ) {
     let query =
       this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
     if (category_id) {
@@ -40,15 +43,16 @@ export class CategoryTypeService {
     return await query.getMany();
   }
 
-  async getCategoryType() {
-    const categoryType = await this.getCategoryTypeByOption();
+  async getCategoryType(getCategoryTypeInput: GetCategoryTypeDto) {
+    const { category_id } = getCategoryTypeInput;
+    const categoryType = await this.getCategoryTypeByOption(category_id);
     return ReturnCommon({
-      message: "Get category type success",
+      message: 'Get category type success',
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
-      data:{
-        categoryType
-      }
+      data: {
+        categoryType,
+      },
     });
   }
   async createCategoryType(createCategoryTypeInput: CreateCategoryTypeDto) {
