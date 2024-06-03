@@ -13,26 +13,10 @@ import {
 } from 'class-validator';
 
 export class GetCategoryTypeDto {
-
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
-  @IsNumber()
-  @IsOptional()
   @ApiProperty({
-    example: '10',
-    required: false,
+    example: 'Id danh muc',
   })
-  readonly limit: number;
-
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({
-    example: '1',
-    required: false,
-  })
-  readonly page: number;
+  @IsUUID()
+  @IsNotEmpty()
+  readonly category_id: string;
 }
