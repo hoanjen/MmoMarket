@@ -25,7 +25,7 @@ export class CategoryTypeService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async getCategoryType(category_id?: string, category_type_ids?: string[]) {
+  async getCategoryTypeByOption(category_id?: string, category_type_ids?: string[]) {
     let query =
       this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
     if (category_id) {
@@ -40,6 +40,17 @@ export class CategoryTypeService {
     return await query.getMany();
   }
 
+  async getCategoryType() {
+    const categoryType = await this.getCategoryTypeByOption();
+    return ReturnCommon({
+      message: "Get category type success",
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data:{
+        categoryType
+      }
+    });
+  }
   async createCategoryType(createCategoryTypeInput: CreateCategoryTypeDto) {
     const { name, category_id } = createCategoryTypeInput;
     const category = await this.categoryService.findCategoryById(category_id);
