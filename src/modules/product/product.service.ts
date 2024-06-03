@@ -67,7 +67,7 @@ export class ProductService {
       : [];
     let listCategoryType = [];
     if (!category_type_ids.length) {
-      listCategoryType = await this.categoryTypeService.getCategoryType(
+      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
         category_id,
       );
       
@@ -75,7 +75,7 @@ export class ProductService {
         return item.id;
       });
     } else {
-      listCategoryType = await this.categoryTypeService.getCategoryType(
+      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
         null,
         category_type_ids,
       );
