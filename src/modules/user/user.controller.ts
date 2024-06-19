@@ -38,5 +38,17 @@ export class UserController {
     return await this.userService.findUserById(findUserByIdInput);
   }
 
-  
+  @ApiBearerAuth()
+  @Get('')
+  @ApiOperation({ summary: 'Find user by token' })
+  async findUserByToken(@Request() req:any) {
+    return await this.userService.findUserByToken(req);
+  }
+
+  @ApiBearerAuth()
+  @Post('update-profile')
+  @ApiOperation({ summary: 'update profile by token' })
+  async updateProfile(@Request() req:any ,@Body() updateProfileInput : UpdateProfileDto) {
+    return await this.userService.updateProfile(req,updateProfileInput);
+  }
 }

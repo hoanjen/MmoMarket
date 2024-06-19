@@ -90,7 +90,7 @@ export class UserService {
     await queryRunner.connect();
     try {
       await queryRunner.startTransaction();
-      
+
       const newUser = this.userRepository.create({
         avatar,
         cover_image,
@@ -106,7 +106,7 @@ export class UserService {
       });
       console.log(111);
       const user = await queryRunner.manager.save(newUser);
-      console.log(222)
+      console.log(222);
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({
@@ -210,5 +210,90 @@ export class UserService {
     }
   }
 
-  async updateProfile(req: any, updateProfileInput: UpdateProfileDto) {}
+  async findUserByToken(req: any) {
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.sub },
+    });
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: {
+        user,
+      },
+      message: 'Get user successfully',
+    });
+  }
+
+  async updateProfile(req: any, updateProfileInput: UpdateProfileDto) {
+    const {
+      first_name,
+      full_name,
+      last_name,
+      middle_name,
+      avatar,
+      cover_image,
+      dob,
+      gender,
+      google_id,
+      phone_number,
+    } = updateProfileInput;
+
+    const updateObj = {};
+
+    if (first_name) {
+      updateObj['first_name'] = first_name;
+    }
+    if (full_name) {
+      updateObj['full_name'] = full_name;
+    }
+    if (last_name) {
+      updateObj['last_name'] = last_name;
+    }
+    if (middle_name) {
+      updateObj['middle_name'] = middle_name;
+    }
+    if (avatar) {
+      updateObj['avatar'] = avatar;
+    }
+    if (cover_image) {
+      updateObj['cover_image'] = cover_image;
+    }
+    if (dob) {
+      const dateNow = new Date();
+      const dateBirth = new Date(dob);
+
+      if (dateBirth > dateNow) {
+        throw new BadRequestException(
+          'Date birth cannot be greater than current date',
+        );
+      }
+      updateObj['dob'] = dob;
+    }
+    if (gender) {
+      updateObj['gender'] = gender;
+    }
+    if (google_id) {
+      updateObj['google_id'] = google_id;
+    }
+    if (phone_number) {
+      updateObj['phone_number'] = phone_number;
+    }
+
+    const user = await this.userRepository.findOne({ where: { id: req.user.sub } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    
+    const updatedUser = Object.assign(user, updateObj);
+    await this.userRepository.save(updatedUser);
+
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: {
+        user: updatedUser,
+      },
+      message: 'update profile successfully',
+    });
+  }
 }
