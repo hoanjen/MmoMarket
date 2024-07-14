@@ -37,9 +37,6 @@ export class VansProduct {
   @Column({ nullable: false })
   quantity: number;
 
-  @Column({ nullable: false })
-  quantitySold: number;
-
   @Column('string', { nullable: true })
   product_id: string;
 

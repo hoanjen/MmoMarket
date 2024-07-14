@@ -2,7 +2,7 @@ import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { BuyVansProductDto } from './dtos/buy-vans-product.dto';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Discount } from './entity/discount.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Order } from './entity/order.entity';
 import { VansProductService } from '../product/vans-product.service';
 import { OrderDetail } from './entity/order-detail.entity';
@@ -28,13 +28,14 @@ export class OrderService {
   ) {}
 
   async isVansProduct(orders: Array<any>) {
-
     const vans_product_ids = orders.map((item) => {
       return item.vans_product_id;
-    })
-    const vansProducts = await this.vansProductService.getVansProduct(vans_product_ids);
+    });
+    const vansProducts = await this.vansProductService.getVansProduct(
+      vans_product_ids,
+    );
     let check = false;
-    if(vansProducts.length !== orders.length){
+    if (vansProducts.length !== orders.length) {
       check = true;
     }
 
@@ -51,7 +52,9 @@ export class OrderService {
         throw new BadRequestException('discount_id is invalid !!');
       }
     }
-    orders = orders.sort((a,b) => a.vans_product_id > b.vans_product_id ? 1 : -1);
+    orders = orders.sort((a, b) =>
+      a.vans_product_id > b.vans_product_id ? 1 : -1,
+    );
     const checkVansProduct = await this.isVansProduct(orders);
 
     if (checkVansProduct.check) {
@@ -69,7 +72,7 @@ export class OrderService {
         orders,
         queryRunner,
       );
-      
+
       const newOrder = this.orderRepository.create({
         user_id: req.user.sub,
         discount_id: discount_id === '' ? null : discount_id,
@@ -90,7 +93,7 @@ export class OrderService {
         OrderDetail,
         newOrderDetail,
       );
-      
+
       orderDetails.identifiers.forEach((item, index) => {
         mapIdVansProduct.set(checkVansProduct.vansProducts[index].id, item.id);
       });
@@ -110,10 +113,12 @@ export class OrderService {
         newDataProductOrder,
       );
 
-      await this.vansProductService.updateQuantityDataProduct(checkVansProduct.vansProducts,queryRunner,newOrderDetail);
+      await this.vansProductService.updateQuantityDataProduct(
+        checkVansProduct.vansProducts,
+        queryRunner,
+        newOrderDetail,
+      );
 
-      
-      
       await queryRunner.commitTransaction();
       await queryRunner.release();
       return ReturnCommon({
@@ -128,6 +133,26 @@ export class OrderService {
       await queryRunner.rollbackTransaction();
       throw error;
     }
-    
+  }
+
+  async isBuyProduct(product_id: string, user_id: string) {
+    const orders = await this.orderRepository.find({ where: { user_id } });
+    const order_ids = orders.map((item) => {
+      return item.id;
+    });
+    const orderDetails = await this.orderDetailRepository.find({
+      where: { order_id: In(order_ids) },
+    });
+    const vans_product_ids = new Set();
+    orderDetails.forEach((item) => {
+      vans_product_ids.add(item.vans_product_id);
+    });
+    const vansProduct = await this.vansProductService.getVansProductIdByProductId(product_id);
+    for(let i = 0; i < vansProduct.length; i++){
+      if (vans_product_ids.has(vansProduct[i].id)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

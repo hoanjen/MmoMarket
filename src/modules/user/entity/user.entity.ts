@@ -18,6 +18,7 @@ import { Role } from './role.entity';
 import { Otp } from 'src/modules/otp/entity/otp.entity';
 import { Product } from 'src/modules/product/entity/product.entity';
 import { Order } from 'src/modules/order/entity/order.entity';
+import { Comment } from 'src/modules/comment/entity/comment.entity';
 
 export const USER_MODEL = 'users';
 
@@ -90,6 +91,9 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date

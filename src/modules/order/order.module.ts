@@ -11,6 +11,7 @@ import { ProductModule } from '../product/product.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Discount,Order,OrderDetail,DataProductOrder]),ProductModule],
   providers: [OrderService],
-  controllers: [OrderController]
+  controllers: [OrderController],
+  exports: [OrderService]
 })
 export class OrderModule {}
