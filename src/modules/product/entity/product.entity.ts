@@ -13,6 +13,7 @@ import {
 import { User } from 'src/modules/user/entity/user.entity';
 import { CategoryType } from 'src/modules/category/entity/category-type.entity';
 import { VansProduct } from './vans-product.entity';
+import { Comment } from 'src/modules/comment/entity/comment.entity';
 
 export const PRODUCT_MODEL = 'products';
 
@@ -71,6 +72,9 @@ export class Product {
   @ManyToOne(() => User, (user) => user.products, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user?: User;
+
+  @OneToMany(() => Comment, (comment) => comment.product)
+  comments: Comment[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date

@@ -50,8 +50,7 @@ export class VansProductService {
       isProduct.minPrice = price;
       await this.productRepository.save(isProduct);
     }
-
-
+    
     const newVansProduct = this.vansProductRepository.create({
       title,
       description,
@@ -59,8 +58,8 @@ export class VansProductService {
       quantity,
       product_id,
     });
+   
     await this.vansProductRepository.save(newVansProduct);
-
     return ReturnCommon({
       statusCode: HttpStatus.CREATED,
       status: EResponse.SUCCESS,
@@ -135,5 +134,10 @@ export class VansProductService {
       status: StatusProductSale.SOLD,
     });
     return data_products_flat;
+  }
+
+  async getVansProductIdByProductId(product_id: string){
+    const vansProducts = await this.vansProductRepository.find({where: {product_id}});
+    return vansProducts;
   }
 }

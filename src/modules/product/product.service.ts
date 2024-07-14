@@ -47,6 +47,7 @@ export class ProductService {
     const newProduct = new Product(title, sub_title, description, image);
     newProduct.category_type_id = category_type_id;
     newProduct.user_id = user_id;
+    newProduct.quantity_sold = 0;
     await this.productRepository.save(newProduct);
     return ReturnCommon({
       statusCode: HttpStatus.CREATED,
@@ -139,4 +140,9 @@ export class ProductService {
       status: EResponse.SUCCESS,
     });
   }
+
+  async getProductById(product_id : string){
+    return await this.productRepository.findOneBy({id: product_id});
+  }
+  
 }

@@ -13,6 +13,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { OrderModule } from './modules/order/order.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 
 @Module({
@@ -40,6 +41,7 @@ import { OrderModule } from './modules/order/order.module';
     ProductModule,
     UploadModule,
     OrderModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

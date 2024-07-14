@@ -11,6 +11,7 @@ import { UserModule } from '../user/user.module';
 import { VansProductController } from './vans-product.controller';
 import { VansProductService } from './vans-product.service';
 import { DataProduct } from './entity/data-product.entity';
+import { OrderModule } from '../order/order.module';
 
 
 
