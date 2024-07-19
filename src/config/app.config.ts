@@ -3,6 +3,7 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('', () => ({
   app: {
     port: process.env.PORT || 8000,
+    whiteList: process.env.WHITE_LIST,
   },
   jwt: {
     jwtSecret: process.env.JWT_SECRET,
@@ -13,6 +14,6 @@ export default registerAs('', () => ({
     mailPassword: process.env.MAIL_PASSWORD,
     mailTransport: process.env.MAIL_TRANSPORT,
     mailHost: process.env.MAIL_HOST,
-    mailPort: process.env.MAIL_PORT
+    mailPort: process.env.MAIL_PORT,
   },
 }));
