@@ -2,21 +2,25 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '../user/user.module';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 import { RoleGuard } from './role.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from '../user/entity/role.entity';
 import { User } from '../user/entity/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     UserModule,
-    TypeOrmModule.forFeature([Role,User]),
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.TOKEN_EXPIRES_TIME },
+    TypeOrmModule.forFeature([Role, User]),
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.jwtSecret'),
+        signOptions: {expiresIn: configService.get<string>('jwt.tokenExpiresTime')}
+      }),
+      inject: [ConfigService],
+      global:true
     }),
   ],
   controllers: [AuthController],
