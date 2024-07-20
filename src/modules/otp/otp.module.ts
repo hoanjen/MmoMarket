@@ -7,25 +7,25 @@ import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Otp } from './entity/otp.entity';
 import { User } from '../user/entity/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Otp, User]),
     MailerModule.forRootAsync({
-      useFactory: () => ({
+      useFactory: async (configService: ConfigService) => ({
         transport: {
-          host: 'smtp.gmail.com',
-          port: 587,
+          host: configService.get<string>('otp.mailUser'),
+          port: configService.get<number>('otp.mailPort'),
           secure: false,
           auth: {
-            user: 'lew2k3@gmail.com',
-            pass: 'yfqkpiwzbuqfgtbk',
+            user: configService.get<string>('otp.mailUser'),
+            pass: configService.get<string>('otp.mailPassword'),
           },
         },
         defaults: {
-          from: process.env.EMAIL_USER,
+          from: configService.get<string>('otp.mailTransport'),
         },
-        // preview: true,
         template: {
           dir: join(__dirname, './templates'),
           adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
@@ -34,6 +34,7 @@ import { User } from '../user/entity/user.entity';
           },
         },
       }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [OtpController],

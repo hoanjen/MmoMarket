@@ -21,20 +21,13 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
-  const whileList = [
-    'http://localhost:3000/',
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:8000',
-    'http://localhost:8000/',
-    'https://mmomarket.onrender.com',
-    'https://mmomarket.onrender.com/api',
-  ];
-
+    const whiteList = configService
+      .get<string>('app.whiteList')
+      .split(',');
+      
   app.enableCors({
     origin: function (origin, callback) {
-      if (whileList.indexOf(origin) !== -1 || !origin) {
+      if (whiteList.indexOf(origin) !== -1 || !origin) {
         callback(null, true);
       } else {
         throw new BadRequestException('error');
@@ -44,7 +37,6 @@ async function bootstrap() {
     allowedHeaders:
       'Origin, X-CSRF-TOKEN, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, channel, request-id, Authorization, x-custom-lang ,',
     methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS,PATCH',
-    
   });
 
   //pipe + filter
