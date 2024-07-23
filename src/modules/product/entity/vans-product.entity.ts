@@ -14,7 +14,7 @@ import { User } from 'src/modules/user/entity/user.entity';
 import { CategoryType } from 'src/modules/category/entity/category-type.entity';
 import { Product } from './product.entity';
 import { DataProduct } from './data-product.entity';
-import { OrderDetail } from 'src/modules/order/entity/order-detail.entity';
+import { Order } from 'src/modules/order/entity/order.entity';
 
 
 export const VANS_PRODUCT_MODEL = 'vans_products';
@@ -50,11 +50,8 @@ export class VansProduct {
   @JoinColumn({ name: 'product_id' })
   data_products: DataProduct[];
 
-  @OneToMany(
-    () => OrderDetail,
-    (objectrderDetail) => objectrderDetail.vans_product,
-  )
-  order_details: OrderDetail[];
+  @OneToMany(() => Order, (order) => order.vans_product)
+  orders: Order[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date

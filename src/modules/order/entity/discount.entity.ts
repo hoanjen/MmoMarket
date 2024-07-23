@@ -7,7 +7,6 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { OrderDetail } from './order-detail.entity';
 import { DiscountType } from '../order.constant';
 import { Order } from './order.entity';
 

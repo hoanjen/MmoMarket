@@ -1,18 +1,44 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
 import { StatusProductSale } from '../product.constant';
 
 export class CreateDataProductDto {
+  @ApiProperty({
+    example: [
+      {
+        account: 'acount',
+        password: 'password'
+      },
+    ],
+  })
+  @IsArray()
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => Array<ItemDataProductDto>)
+  readonly dataProducts: Array<ItemDataProductDto>;
+
+  @IsUUID()
+  @ApiProperty({
+    example: 'vans_product_id',
+    required: true,
+  })
+  readonly vans_product_id: string;
+}
+
+export class ItemDataProductDto {
   @IsString()
   @ApiProperty({
     example: 'account',
@@ -27,19 +53,21 @@ export class CreateDataProductDto {
     required: true,
   })
   readonly password: string;
+}
 
-  @IsString()
-  @ApiProperty({
-    example: StatusProductSale.NOTSOLD,
-    default: StatusProductSale.NOTSOLD,
-    required: false,
-  })
-  readonly status: StatusProductSale;
-
-  @IsUUID()
+export class ItemDataProductBuyDto {
   @ApiProperty({
     example: 'vans_product_id',
     required: true,
   })
+  @IsUUID()
+  @IsNotEmpty()
   readonly vans_product_id: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'number' ? value : parseInt(value),
+  )
+  readonly quantity: number;
 }

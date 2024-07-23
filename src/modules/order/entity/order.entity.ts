@@ -1,7 +1,8 @@
 import { User } from "src/modules/user/entity/user.entity";
 import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
-import { OrderDetail } from "./order-detail.entity";
 import { Discount } from "./discount.entity";
+import { DataProductOrder } from "./data-product-order.entity";
+import { VansProduct } from "src/modules/product/entity/vans-product.entity";
 
 export const ORDER_ENTITY = 'orders'
 
@@ -21,14 +22,19 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order, {
-    onDelete: 'CASCADE',
-  })
-  order_details: OrderDetail[];
+  @Column({ nullable: true })
+  vans_product_id: string;
+
+  @OneToMany(() => DataProductOrder, (dataProductOrder) => dataProductOrder.order)
+  data_product_orders: DataProductOrder[];
 
   @ManyToOne(() => Discount, (discount) => discount.orders)
   @JoinColumn({ name: 'discount_id' })
   discount: Discount;
+
+  @ManyToOne(() => VansProduct, (vansProduct) => vansProduct.orders)
+  @JoinColumn({ name: 'vans_product_id' })
+  vans_product: VansProduct;
 
   @CreateDateColumn()
   created_at: Date;

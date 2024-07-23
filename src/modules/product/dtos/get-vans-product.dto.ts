@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -21,3 +22,5 @@ export class GetVansProductDto {
   @IsNotEmpty()
   readonly vans_product_id: string;
 }
+
+

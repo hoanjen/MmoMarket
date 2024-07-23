@@ -10,8 +10,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { OrderDetail } from './order-detail.entity';
 import { DataProduct } from 'src/modules/product/entity/data-product.entity';
+import { Order } from './order.entity';
 
 export const DATA_PRODUCT_ORDER_ENTITY = 'data_product_orders';
 
@@ -22,14 +22,14 @@ export class DataProductOrder {
   id: string;
 
   @Column({ nullable: false })
-  order_detail_id: string;
+  order_id: string;
 
   @Column({ nullable: false })
   data_product_id: string;
 
-  @ManyToOne(() => OrderDetail, (orderDetail) => orderDetail.data_product_orders)
-  @JoinColumn({ name: 'order_detail_id' })
-  order_detail: OrderDetail;
+  @ManyToOne(() => Order, (order) => order.data_product_orders)
+  @JoinColumn({ name: 'order_id' })
+  order: Order;
 
   @OneToOne(() => DataProduct, (dataProduct) => dataProduct.data_product_order)
   @JoinColumn({ name: 'data_product_id' })
