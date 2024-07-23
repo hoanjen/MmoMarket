@@ -18,30 +18,6 @@ import {
 
 
 export class BuyVansProductDto {
-
-  @ApiProperty({
-    example: [
-      {
-        vans_product_id: 'id vans product',
-        quantity: 'quantity',
-      },
-    ],
-  })
-  @IsArray()
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => Array<ItemOrderDto>)
-  readonly orders: Array<ItemOrderDto>;
-
-  @ApiProperty({
-    example: 'abcdefgh',
-  })
-  
-  readonly discount_id?: string;
-}
-
-export class ItemOrderDto {
-
   @ApiProperty({
     example: 'id vans product',
   })
@@ -59,4 +35,5 @@ export class ItemOrderDto {
   @IsNotEmpty()
   readonly quantity: number;
 
+  readonly discount_id?: string;
 }

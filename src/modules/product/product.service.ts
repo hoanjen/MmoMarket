@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { GetProductDto } from './dtos/get-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, QueryRunner, Repository } from 'typeorm';
 import { PRODUCT_MODEL, Product } from './entity/product.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
@@ -71,7 +71,7 @@ export class ProductService {
       listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
         category_id,
       );
-      
+
       listCategoryTypeId = listCategoryType.map((item) => {
         return item.id;
       });
@@ -86,7 +86,7 @@ export class ProductService {
       });
     }
 
-    if(!listCategoryTypeId.length){
+    if (!listCategoryTypeId.length) {
       return ReturnCommon({
         message: 'Not Found Product',
         data: {
@@ -141,8 +141,16 @@ export class ProductService {
     });
   }
 
-  async getProductById(product_id : string){
-    return await this.productRepository.findOneBy({id: product_id});
+  async getProductById(product_id: string) {
+    return await this.productRepository.findOneBy({ id: product_id });
   }
-  
+
+  async updateProductQuantitySold(queryRunner: QueryRunner, quantity: number, product_id: string) {
+    await queryRunner.manager
+      .createQueryBuilder()
+      .update(Product)
+      .set({ quantity_sold: () => `quantity_sold + ${quantity}` })
+      .where('id = :id', { id: product_id })
+      .execute();
+  }
 }

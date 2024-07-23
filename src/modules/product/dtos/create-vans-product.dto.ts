@@ -41,17 +41,6 @@ export class CreateVansProductDto {
   })
   readonly price: number;
 
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
-  @IsNumber()
-  @ApiProperty({
-    example: '100',
-    default: '1',
-    required: false,
-  })
-  readonly quantity: number;
-
   @IsUUID()
   @ApiProperty({
     example: 'product_id',
