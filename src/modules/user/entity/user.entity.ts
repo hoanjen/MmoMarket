@@ -19,6 +19,8 @@ import { Otp } from 'src/modules/otp/entity/otp.entity';
 import { Product } from 'src/modules/product/entity/product.entity';
 import { Order } from 'src/modules/order/entity/order.entity';
 import { Comment } from 'src/modules/comment/entity/comment.entity';
+import { Balance } from 'src/modules/payment/entity/balance.entity';
+import { Transaction } from 'src/modules/payment/entity/transaction.entity';
 
 export const USER_MODEL = 'users';
 
@@ -55,9 +57,6 @@ export class User {
   google_id: string;
 
   @Column({ nullable: true })
-  balance: number;
-
-  @Column({ nullable: true })
   @Transform(({ value }) =>
     typeof value === 'string' ? new Date(value) : value,
   )
@@ -76,6 +75,12 @@ export class User {
 
   @Column({ nullable: true })
   cover_image: string;
+
+  @OneToOne(() => Balance, (balance) => balance.user)
+  balance: Balance;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions: Balance[];
 
   @OneToMany(() => Role, (role) => role.user) // specify inverse side as a second parameter
   roles: Role[];
