@@ -11,6 +11,8 @@ import { DATA_PRODUCT_MODEL, DataProduct } from './entity/data-product.entity';
 import { GetVansProductDto } from './dtos/get-vans-product.dto';
 import { StatusProductSale } from './product.constant';
 import { ProductService } from './product.service';
+import * as XLSX from 'xlsx';
+import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 
 @Injectable()
 export class VansProductService {
@@ -28,10 +30,10 @@ export class VansProductService {
     return await this.vansProductRepository.findOneBy({id: vans_product_id});
   }
 
-  async createVansProduct(createVansProductInput: CreateVansProductDto) {
+  async createVansProduct(createVansProductInput: CreateVansProductDto, user_id: string) {
     const { title, price, product_id, description } = createVansProductInput;
     const isProduct = await this.productRepository.findOne({
-      where: { id: product_id },
+      where: { id: product_id , user_id},
     });
 
     if (!isProduct) {
@@ -66,13 +68,19 @@ export class VansProductService {
     });
   }
 
-  async createDataProduct(createDataProductInput: CreateDataProductDto) {
+  async createDataProduct(createDataProductInput: CreateDataProductDto, user_id: string) {
     const { dataProducts, vans_product_id } = createDataProductInput;
+
     const vansProduct = await this.vansProductRepository.findOne({
       where: { id: vans_product_id },
     });
     if (!vansProduct) {
       throw new BadRequestException('Vans Product not exist');
+    }
+
+    const product = await this.productService.getProductById(vansProduct.product_id);
+    if(product.user_id !== user_id){
+      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`)
     }
     const dataProductArray = dataProducts.map((item) => ({
       account: item.account,
@@ -127,5 +135,47 @@ export class VansProductService {
       where: { product_id },
     });
     return vansProducts;
+  }
+
+  async importDataProductExcecl(file :Express.Multer.File, vans_product_id: string, user_id){
+
+    const vansProduct = await this.vansProductRepository.findOne({
+      where: { id: vans_product_id },
+    });
+    if (!vansProduct) {
+      throw new BadRequestException('Vans Product not exist');
+    }
+
+    const product = await this.productService.getProductById(vansProduct.product_id);
+    if(product.user_id !== user_id){
+      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`)
+    }
+
+    const workbook = XLSX.read(file[0].buffer ,{type: 'buffer'});
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    if(!data[0]['account'] || !data[0]['password']){
+      throw new BadRequestException('Document is not valid')
+    }
+
+    const dataProducts = data.map((item:object) => ({
+      ...item,
+      status: StatusProductSale.NOTSOLD,
+      vans_product_id
+    }))
+
+    await this.dataProductRepository.insert(dataProducts);
+    await this.vansProductRepository.update(vans_product_id,{quantity: vansProduct.quantity + dataProducts.length});
+
+    return ReturnCommon({
+      message: "Import data product success",
+      statusCode: HttpStatus.CREATED,
+      status: EResponse.SUCCESS,
+      data: {
+        dataProducts
+      }
+    })
   }
 }

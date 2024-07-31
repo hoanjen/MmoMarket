@@ -38,7 +38,7 @@ export class UploadController {
     )
     files: Array<Express.Multer.File>,
   ) {
-    const path = 'image/avatar'
+    const path = 'image'
     return this.uploadService.uploadFile(req.user.sub, path,files);
   }
 }

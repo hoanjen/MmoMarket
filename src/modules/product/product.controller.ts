@@ -1,6 +1,6 @@
 import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Post, Query, Request, UploadedFiles } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiFiles, IsPublic } from 'src/common/decorators/decorator.common';
+import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { ProductService } from './product.service';
 import { GetProductDto } from './dtos/get-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
@@ -23,6 +23,7 @@ export class ProductController {
 
 
   @ApiOperation({ summary: 'Create Product' })
+  @Roles(Role.Admin,Role.User)
   @ApiBearerAuth()
   @Post()
   async createProduct(
