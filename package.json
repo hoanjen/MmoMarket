@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
     "migration:run": "npm run typeorm migration:run -- -d ./src/config/database/database.config.ts",
-    "migration:generate": "npm run typeorm -- -d ./src/config/database/database.config.ts migration:generate ./src/migrations/generate/%npm_config_name%",
+    "migration:generate": "npm run typeorm -- -d ./src/config/database/database.config.ts migration:generate ./src/migrations/generate/$npm_config_name$",
     "migration:create": "npm run typeorm -- migration:create ./src/migrations/generate/$npm_config_name",
     "migration:revert": "npm run typeorm -- -d ./src/config/database/database.config.ts migration:revert"
   },
@@ -46,7 +46,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

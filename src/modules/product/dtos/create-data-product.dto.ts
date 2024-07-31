@@ -71,3 +71,13 @@ export class ItemDataProductBuyDto {
   )
   readonly quantity: number;
 }
+
+export class IdVansProductDto{
+  @ApiProperty({
+    example: 'vans_product_id',
+    required: true,
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  readonly vans_product_id: string;
+}
