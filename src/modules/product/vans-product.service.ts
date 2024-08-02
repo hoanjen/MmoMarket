@@ -151,11 +151,11 @@ export class VansProductService {
       throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`)
     }
 
-    const workbook = XLSX.read(file[0].buffer ,{type: 'buffer'});
+    const workbook = XLSX.read(file.buffer ,{type: 'buffer'});
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(sheet);
-
+    
     if(!data[0]['account'] || !data[0]['password']){
       throw new BadRequestException('Document is not valid')
     }

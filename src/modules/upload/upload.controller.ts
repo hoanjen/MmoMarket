@@ -3,6 +3,7 @@ import {
   FileTypeValidator,
   MaxFileSizeValidator,
   ParseFilePipe,
+  ParseFilePipeBuilder,
   Post,
   Request,
   UploadedFiles,
@@ -14,6 +15,7 @@ import { ApiFiles, IsPublic } from 'src/common/decorators/decorator.common';
 import { UploadService } from './upload.service';
 import { UploadFileDto } from './dtos/upload.dto';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { CustomFileValidatorForFile } from 'src/common/pipes/file-validator.common';
 
 @ApiTags('Upload')
 @Controller('upload')
@@ -29,12 +31,13 @@ export class UploadController {
   async uploadFile(
     @Request() req:any,
     @UploadedFiles(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 3000000 }),
-          new FileTypeValidator({ fileType: 'image' }),
-        ],
-      }),
+      new ParseFilePipeBuilder()
+      .addValidator(new CustomFileValidatorForFile('image/png,image/jpg,image/jpeg'))
+      .addMaxSizeValidator({
+        maxSize: 300000,
+        message: 'File is too large'
+      })
+      .build()
     )
     files: Array<Express.Multer.File>,
   ) {

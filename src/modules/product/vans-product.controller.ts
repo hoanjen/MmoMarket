@@ -1,10 +1,11 @@
-import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, Post, Query, Req, Request, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, ParseFilePipe, ParseFilePipeBuilder, Post, Query, Req, Request, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { CreateVansProductDto } from './dtos/create-vans-product.dto';
 import { VansProductService } from './vans-product.service';
 import { CreateDataProductDto, IdVansProductDto } from './dtos/create-data-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { CustomFileValidatorForFile } from 'src/common/pipes/file-validator.common';
 
 @ApiTags('Vans Product')
 @Controller('vans-product')
@@ -51,16 +52,19 @@ export class VansProductController {
   async uploadFile(
     @Request() req : any,
     @UploadedFiles(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 3000000 }),
-          new FileTypeValidator({ fileType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-        ],
-      }),
+      new ParseFilePipeBuilder()
+      .addValidator(new CustomFileValidatorForFile('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
+      .addMaxSizeValidator({
+        maxSize: 30000,
+        message: 'File is too large'
+      })
+      .build({
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST
+      })
     )
     file: Express.Multer.File,
     @Body() IdVansProductInput: IdVansProductDto
   ) {
-    return this.vansProductService.importDataProductExcecl(file,IdVansProductInput.vans_product_id, req.user.sub)
+    return this.vansProductService.importDataProductExcecl(file[0],IdVansProductInput.vans_product_id, req.user.sub)
   }
 }
