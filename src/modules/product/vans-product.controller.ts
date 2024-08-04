@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, ParseFilePipe, ParseFilePipeBuilder, Post, Query, Req, Request, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, ParseFilePipe, ParseFilePipeBuilder, Post, Query, Req, Request, Res, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { CreateVansProductDto } from './dtos/create-vans-product.dto';
@@ -6,6 +6,7 @@ import { VansProductService } from './vans-product.service';
 import { CreateDataProductDto, IdVansProductDto } from './dtos/create-data-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CustomFileValidatorForFile } from 'src/common/pipes/file-validator.common';
+import { Response } from 'express';
 
 @ApiTags('Vans Product')
 @Controller('vans-product')
@@ -59,11 +60,12 @@ export class VansProductController {
         message: 'File is too large'
       })
       .build({
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        fileIsRequired: true
       })
     )
     file: Express.Multer.File,
-    @Body() IdVansProductInput: IdVansProductDto
+    @Body() IdVansProductInput: IdVansProductDto,
   ) {
     return this.vansProductService.importDataProductExcecl(file[0],IdVansProductInput.vans_product_id, req.user.sub)
   }
