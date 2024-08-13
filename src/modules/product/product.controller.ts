@@ -6,7 +6,7 @@ import { GetProductDto } from './dtos/get-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { GetProductOfCategoryTypeDto } from '../category/dtos/get-product-of-categorytype.dto';
 import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
-import { GetProductByQueryDto } from './dtos/get-product-by-query.dto';
+import { GetCategoryTypeDto, GetProductByQueryDto } from './dtos/get-product-by-query.dto';
 
 
 @ApiTags('Product')
@@ -35,8 +35,15 @@ export class ProductController {
   
   @IsPublic()
   @ApiOperation({ summary: 'Get Product By Query' })
-  @Get('/query')
+  @Get('/queryProduct')
   async getProduct(@Query() getProductInput: GetProductByQueryDto) {
     return this.productService.getProductByQuery(getProductInput);
+  }
+
+  @IsPublic()
+  @ApiOperation({ summary: 'Get CategoryType By Query' })
+  @Get('/queryCategotyType')
+  async getVansProduct(@Query() getCategoryTypeInput: GetCategoryTypeDto) {
+    return this.productService.getCategoryTypeByQuery(getCategoryTypeInput);
   }
 }

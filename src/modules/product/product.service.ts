@@ -16,7 +16,7 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { UserService } from '../user/user.service';
 import { CategoryService } from '../category/category.service';
 import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
-import { GetProductByQueryDto } from './dtos/get-product-by-query.dto';
+import { GetCategoryTypeDto, GetProductByQueryDto } from './dtos/get-product-by-query.dto';
 import { CategoryTypeService } from '../category/category-type.service';
 import { SortBy } from './product.constant';
 
@@ -59,52 +59,46 @@ export class ProductService {
     });
   }
 
-  async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
-    const { category_id, keyword, limit, page, sortBy } =
-      getProductByQueryInput;
-    const category_type_ids = [];
-    let listCategoryTypeId: string[] = category_type_ids.length
-      ? category_type_ids
-      : [];
+
+  async getCategoryTypeByQuery(getCategoryTypeInput : GetCategoryTypeDto){
+    const { category_id ,category_type_ids} = getCategoryTypeInput;
     let listCategoryType = [];
-    if (!category_type_ids.length) {
+    if (!category_type_ids?.length) {
       listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
         category_id,
       );
 
-      listCategoryTypeId = listCategoryType.map((item) => {
-        return item.id;
-      });
     } else {
       listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
         null,
         category_type_ids,
       );
 
-      listCategoryTypeId = listCategoryType.map((item) => {
-        return item.id;
-      });
     }
+    return ReturnCommon({
+      message: 'Get categorytype success',
+      data: {
+        listCategoryType,
+      },
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
 
-    if (!listCategoryTypeId.length) {
-      return ReturnCommon({
-        message: 'Not Found Product',
-        data: {
-          listCategoryType,
-          products: [],
-        },
-        statusCode: HttpStatus.OK,
-        status: EResponse.SUCCESS,
-      });
+
+  async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
+    const { category_type_ids, keyword, limit, page, sortBy } = getProductByQueryInput;
+    const categoryType = await this.categoryTypeService.getCategoryTypeByOption(null,category_type_ids);
+    if(category_type_ids.length !== categoryType.length) {
+      throw new BadRequestException('category_type_ids invalid')
     }
-
     const vlimit = limit ? limit : 100;
     const vpage = page ? page : 1;
     const skip = (vpage - 1) * vlimit;
 
     let productsQuery = this.productRepository
       .createQueryBuilder(PRODUCT_MODEL)
-      .where('category_type_id IN (:...ids)', { ids: listCategoryTypeId })
+      .where('category_type_id IN (:...ids)', { ids: category_type_ids })
       .leftJoinAndSelect('products.vans_products', 'vans_product');
 
     if (keyword) {
@@ -135,7 +129,7 @@ export class ProductService {
     const previousPage = vpage > 1 ? vpage - 1 : null;
     return ReturnCommon({
       message: 'success',
-      data: { listCategoryType, products, previousPage, totalPages, nextPage },
+      data: { products, previousPage, totalPages, nextPage },
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
     });

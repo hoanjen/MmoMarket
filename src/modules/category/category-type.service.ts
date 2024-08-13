@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CATEGORY_TYPE_MODEL,
@@ -29,18 +29,24 @@ export class CategoryTypeService {
     category_id?: string,
     category_type_ids?: string[],
   ) {
-    let query =
+    try {
+      let query =
       this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
     if (category_id) {
       query = query.where('category_types.category_id = :category_id', {
         category_id: category_id,
       });
     } else if (category_type_ids?.length) {
-      query = query.where('category_types.id IN :ids', {
-        ids: category_type_ids,
+      query = query.where('category_types.id IN (:...ids)', {
+        ids: [...category_type_ids],
       });
     }
-    return await query.getMany();
+    var categoryType = await query.getMany();
+    
+    } catch (error) {
+      throw new BadRequestException('category_type_ids invalid');
+    } 
+    return categoryType;
   }
 
   async getCategoryType(getCategoryTypeInput: GetCategoryTypeDto) {
