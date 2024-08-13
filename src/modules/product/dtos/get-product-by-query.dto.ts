@@ -15,13 +15,6 @@ import {
 import { SortBy } from '../product.constant';
 
 export class GetProductByQueryDto {
-  @ApiProperty({
-    example: 'Id of category',
-    required: false,
-  })
-  @IsUUID()
-  @IsOptional()
-  readonly category_id: string;
 
   @ApiProperty({
     required: false,
@@ -67,4 +60,21 @@ export class GetProductByQueryDto {
   @IsEnum(SortBy)
   @IsOptional()
   readonly sortBy: SortBy;
+}
+
+export class GetCategoryTypeDto{
+  @ApiProperty({
+    example: 'Id of category',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  readonly category_id: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  readonly category_type_ids?: Array<string>;
 }
