@@ -22,5 +22,3 @@ export class GetVansProductDto {
   @IsNotEmpty()
   readonly vans_product_id: string;
 }
-
-

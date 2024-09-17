@@ -26,14 +26,14 @@ export class VansProductService {
     private readonly productService: ProductService,
   ) {}
 
-  async getVansProduct(vans_product_id: string){
-    return await this.vansProductRepository.findOneBy({id: vans_product_id});
+  async getVansProduct(vans_product_id: string) {
+    return await this.vansProductRepository.findOneBy({ id: vans_product_id });
   }
 
   async createVansProduct(createVansProductInput: CreateVansProductDto, user_id: string) {
     const { title, price, product_id, description } = createVansProductInput;
     const isProduct = await this.productRepository.findOne({
-      where: { id: product_id , user_id},
+      where: { id: product_id, user_id },
     });
 
     if (!isProduct) {
@@ -79,17 +79,17 @@ export class VansProductService {
     }
 
     const product = await this.productService.getProductById(vansProduct.product_id);
-    if(product.user_id !== user_id){
-      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`)
+    if (product.user_id !== user_id) {
+      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`);
     }
     const dataProductArray = dataProducts.map((item) => ({
       account: item.account,
       password: item.password,
       status: StatusProductSale.NOTSOLD,
-      vans_product_id
+      vans_product_id,
     }));
 
-    await this.vansProductRepository.update(vansProduct.id,{
+    await this.vansProductRepository.update(vansProduct.id, {
       ...vansProduct,
       quantity: vansProduct.quantity + dataProductArray.length,
     });
@@ -106,11 +106,12 @@ export class VansProductService {
     });
   }
 
-
   async getDataProduct(itemDataProductBuyInput: ItemDataProductBuyDto, queryRunner: QueryRunner) {
-    const {quantity,vans_product_id } = itemDataProductBuyInput;
-    
-    const vansProduct = await this.vansProductRepository.findOneBy({id: vans_product_id});
+    const { quantity, vans_product_id } = itemDataProductBuyInput;
+
+    const vansProduct = await this.vansProductRepository.findOneBy({
+      id: vans_product_id,
+    });
     if (vansProduct.quantity < quantity) {
       throw new BadRequestException('data_products sold out');
     }
@@ -120,13 +121,15 @@ export class VansProductService {
         vans_product_id: vans_product_id,
       },
       take: quantity,
-    }); 
+    });
 
-    await queryRunner.manager.update(VansProduct,vansProduct, {quantity: vansProduct.quantity - quantity});
-    await this.productService.updateProductQuantitySold(queryRunner,quantity,vansProduct.product_id);
+    await queryRunner.manager.update(VansProduct, vansProduct, {
+      quantity: vansProduct.quantity - quantity,
+    });
+    await this.productService.updateProductQuantitySold(queryRunner, quantity, vansProduct.product_id);
     await queryRunner.manager.update(DataProduct, dataProducts, {
       status: StatusProductSale.SOLD,
-    }); 
+    });
     return dataProducts;
   }
 
@@ -137,8 +140,7 @@ export class VansProductService {
     return vansProducts;
   }
 
-  async importDataProductExcecl(file :Express.Multer.File, vans_product_id: string, user_id){
-
+  async importDataProductExcecl(file: Express.Multer.File, vans_product_id: string, user_id) {
     const vansProduct = await this.vansProductRepository.findOne({
       where: { id: vans_product_id },
     });
@@ -147,61 +149,65 @@ export class VansProductService {
     }
 
     const product = await this.productService.getProductById(vansProduct.product_id);
-    if(product.user_id !== user_id){
-      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`)
+    if (product.user_id !== user_id) {
+      throw new BadRequestException(`You don't have any product with id ${vansProduct.product_id}`);
     }
 
-    const dataProducts = await this.dataProductRepository.findBy({vans_product_id});
+    const dataProducts = await this.dataProductRepository.findBy({
+      vans_product_id,
+    });
     const checkDuplicate = new Set();
 
     dataProducts.forEach((item) => {
       checkDuplicate.add(item.account);
-    })
-    const workbook = XLSX.read(file.buffer ,{type: 'buffer'});
+    });
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(sheet,{header: 1});
-    let rowDuplicate = []
-    const dataProductNews = []
+    const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    let rowDuplicate = [];
+    const dataProductNews = [];
     console.log(data);
-    data.forEach((item:Array<any>, index) =>{
-      if(item[0] === undefined || item[1] === undefined){
+    data.forEach((item: Array<any>, index) => {
+      if (item[0] === undefined || item[1] === undefined) {
         rowDuplicate.push(index);
-      }
-      else if(checkDuplicate.has(item[0])){
+      } else if (checkDuplicate.has(item[0])) {
         rowDuplicate.push(index);
         return false;
-      }
-      else{
-        dataProductNews.push({account: item[0],
+      } else {
+        dataProductNews.push({
+          account: item[0],
           password: item[1],
           status: StatusProductSale.NOTSOLD,
-          vans_product_id});
+          vans_product_id,
+        });
       }
-    })
+    });
     rowDuplicate = rowDuplicate.map((item) => `${sheet['!ref'][0]}${item + parseInt(sheet['!ref'][1])}`);
-    if(rowDuplicate.length !== 0){
+    if (rowDuplicate.length !== 0) {
       return ReturnCommon({
-        message: "You have few account duplicate or empty",
+        message: 'You have few account duplicate or empty',
         statusCode: HttpStatus.CREATED,
         status: EResponse.SUCCESS,
         data: {
-          rowDuplicate
-        }
+          rowDuplicate,
+        },
       });
     }
-    if(dataProductNews.length === 0){
-      throw new BadRequestException('Excel Empty')
+    if (dataProductNews.length === 0) {
+      throw new BadRequestException('Excel Empty');
     }
     await this.dataProductRepository.insert(dataProductNews);
-    await this.vansProductRepository.update(vans_product_id,{quantity: vansProduct.quantity + dataProductNews.length});
+    await this.vansProductRepository.update(vans_product_id, {
+      quantity: vansProduct.quantity + dataProductNews.length,
+    });
     return ReturnCommon({
-      message: "Import data product success",
+      message: 'Import data product success',
       statusCode: HttpStatus.CREATED,
       status: EResponse.SUCCESS,
       data: {
-        dataProductNews
-      }
+        dataProductNews,
+      },
     });
   }
 }

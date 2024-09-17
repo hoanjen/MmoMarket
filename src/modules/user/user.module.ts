@@ -8,7 +8,7 @@ import { Role } from './entity/role.entity';
 import { GatewayModule } from '../gateway/gateway.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Password, Role]),GatewayModule],
+  imports: [TypeOrmModule.forFeature([User, Password, Role]), GatewayModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

@@ -3,16 +3,15 @@ import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swag
 import { OrderService } from './order.service';
 import { BuyVansProductDto } from './dtos/buy-vans-product.dto';
 
-
 @ApiTags('Order')
 @Controller('order')
 export class OrderController {
-   constructor(private readonly orderSevice: OrderService){}
+  constructor(private readonly orderSevice: OrderService) {}
 
   @ApiOperation({ summary: 'Buy VansProduct' })
   @ApiBearerAuth()
   @Post()
-  async buyVansProduct(@Request() req: any ,@Body() buyVansProductInput : BuyVansProductDto) {
-   return this.orderSevice.createOrder(req,buyVansProductInput);
+  async buyVansProduct(@Request() req: any, @Body() buyVansProductInput: BuyVansProductDto) {
+    return this.orderSevice.createOrder(req, buyVansProductInput);
   }
 }

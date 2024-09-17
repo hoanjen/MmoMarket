@@ -16,7 +16,6 @@ import { Product } from './product.entity';
 import { DataProduct } from './data-product.entity';
 import { Order } from 'src/modules/order/entity/order.entity';
 
-
 export const VANS_PRODUCT_MODEL = 'vans_products';
 
 @Entity(VANS_PRODUCT_MODEL)

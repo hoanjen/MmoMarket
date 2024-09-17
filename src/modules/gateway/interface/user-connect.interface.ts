@@ -1,6 +1,6 @@
-import {Socket} from 'socket.io'
+import { Socket } from 'socket.io';
 
-export interface AuthenticatedSocket extends Socket{
-    readonly sub : string,
-    readonly username : string
+export interface AuthenticatedSocket extends Socket {
+  readonly sub: string;
+  readonly username: string;
 }

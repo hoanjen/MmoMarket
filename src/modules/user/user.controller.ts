@@ -23,10 +23,7 @@ import { Gateway } from '../gateway/app.gateway';
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly gateway: Gateway
-  ) {}
+  constructor(private readonly userService: UserService, private readonly gateway: Gateway) {}
 
   @IsPublic()
   @Post()
@@ -45,21 +42,21 @@ export class UserController {
   @ApiBearerAuth()
   @Get('')
   @ApiOperation({ summary: 'Find user by token' })
-  async findUserByToken(@Request() req:any) {
+  async findUserByToken(@Request() req: any) {
     return await this.userService.findUserByToken(req);
   }
 
   @ApiBearerAuth()
   @Post('update-profile')
   @ApiOperation({ summary: 'update profile by token' })
-  async updateProfile(@Request() req:any ,@Body() updateProfileInput : UpdateProfileDto) {
-    return await this.userService.updateProfile(req,updateProfileInput);
+  async updateProfile(@Request() req: any, @Body() updateProfileInput: UpdateProfileDto) {
+    return await this.userService.updateProfile(req, updateProfileInput);
   }
 
   @ApiBearerAuth()
   @Post('send')
   @ApiOperation({ summary: 'send' })
   async send() {
-    this.gateway.onMessageUserToUser('dad08553-fa36-426f-a13b-c54ebb7519e9','be8b219d-604c-41d7-8354-fce4ad873309')
+    this.gateway.onMessageUserToUser('dad08553-fa36-426f-a13b-c54ebb7519e9', 'be8b219d-604c-41d7-8354-fce4ad873309');
   }
 }

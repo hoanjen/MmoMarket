@@ -13,12 +13,14 @@ import { VansProductService } from './vans-product.service';
 import { DataProduct } from './entity/data-product.entity';
 import { OrderModule } from '../order/order.module';
 
-
-
 @Module({
-  imports: [CategoryModule,UserModule,TypeOrmModule.forFeature([Product,CategoryType, User, VansProduct, DataProduct])],
+  imports: [
+    CategoryModule,
+    UserModule,
+    TypeOrmModule.forFeature([Product, CategoryType, User, VansProduct, DataProduct]),
+  ],
   controllers: [ProductController, VansProductController],
   providers: [ProductService, VansProductService],
-  exports: [ProductService,VansProductService],
+  exports: [ProductService, VansProductService],
 })
 export class ProductModule {}

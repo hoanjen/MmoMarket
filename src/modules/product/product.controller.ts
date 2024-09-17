@@ -1,4 +1,16 @@
-import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, ParseIntPipe, Post, Query, Request, UploadedFiles } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  FileTypeValidator,
+  Get,
+  MaxFileSizeValidator,
+  ParseFilePipe,
+  ParseIntPipe,
+  Post,
+  Query,
+  Request,
+  UploadedFiles,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { ProductService } from './product.service';
@@ -7,7 +19,6 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { GetProductOfCategoryTypeDto } from '../category/dtos/get-product-of-categorytype.dto';
 import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
 import { GetCategoryTypeDto, GetProductByQueryDto } from './dtos/get-product-by-query.dto';
-
 
 @ApiTags('Product')
 @Controller('product')
@@ -21,18 +32,14 @@ export class ProductController {
     return this.productService.getProduct();
   }
 
-
   @ApiOperation({ summary: 'Create Product' })
-  @Roles(Role.Admin,Role.User)
+  @Roles(Role.Admin, Role.User)
   @ApiBearerAuth()
   @Post()
-  async createProduct(
-    @Request() req: any,
-    @Body() createProductInput: CreateProductDto,
-  ) {
+  async createProduct(@Request() req: any, @Body() createProductInput: CreateProductDto) {
     return this.productService.createProduct(req.user.sub, createProductInput);
   }
-  
+
   @IsPublic()
   @ApiOperation({ summary: 'Get Product By Query' })
   @Get('/queryProduct')

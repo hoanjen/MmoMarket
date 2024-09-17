@@ -2,21 +2,14 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dtos/signup.dto';
 import { SignInDto } from './dtos/signin.dto';
-import {
-  ApiBasicAuth,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { Gateway } from '../gateway/app.gateway';
-
 
 @IsPublic()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-
   constructor(private readonly authService: AuthService) {}
   @IsPublic()
   @ApiOperation({ summary: 'Signup' })
@@ -28,9 +21,7 @@ export class AuthController {
   @IsPublic()
   @ApiOperation({ summary: 'test' })
   @Post('test')
-  async test(@Body() signInInput: SignInDto) {
-  
-  }
+  async test(@Body() signInInput: SignInDto) {}
 
   @IsPublic()
   @ApiOperation({ summary: 'Signin' })

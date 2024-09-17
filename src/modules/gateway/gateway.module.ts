@@ -6,6 +6,6 @@ import { GatewayService } from './gateway.service';
 
 @Module({
   providers: [GatewayService, Gateway],
-  exports: [GatewayService, Gateway]
+  exports: [GatewayService, Gateway],
 })
-export class GatewayModule { }
+export class GatewayModule {}

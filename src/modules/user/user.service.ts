@@ -46,10 +46,7 @@ export class UserService {
   async getHashPassword(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     const id = user.id;
-    const pass = await this.passwordRepository
-      .createQueryBuilder('pass')
-      .where('user_id = :id', { id })
-      .getOne();
+    const pass = await this.passwordRepository.createQueryBuilder('pass').where('user_id = :id', { id }).getOne();
     const hashPassword = pass.password;
     return hashPassword;
   }
@@ -223,18 +220,8 @@ export class UserService {
   }
 
   async updateProfile(req: any, updateProfileInput: UpdateProfileDto) {
-    const {
-      first_name,
-      full_name,
-      last_name,
-      middle_name,
-      avatar,
-      cover_image,
-      dob,
-      gender,
-      google_id,
-      phone_number,
-    } = updateProfileInput;
+    const { first_name, full_name, last_name, middle_name, avatar, cover_image, dob, gender, google_id, phone_number } =
+      updateProfileInput;
 
     const updateObj = {};
 
@@ -261,9 +248,7 @@ export class UserService {
       const dateBirth = new Date(dob);
 
       if (dateBirth > dateNow) {
-        throw new BadRequestException(
-          'Date birth cannot be greater than current date',
-        );
+        throw new BadRequestException('Date birth cannot be greater than current date');
       }
       updateObj['dob'] = dob;
     }
@@ -277,11 +262,13 @@ export class UserService {
       updateObj['phone_number'] = phone_number;
     }
 
-    const user = await this.userRepository.findOne({ where: { id: req.user.sub } });
+    const user = await this.userRepository.findOne({
+      where: { id: req.user.sub },
+    });
     if (!user) {
       throw new BadRequestException('User not found');
     }
-    
+
     const updatedUser = Object.assign(user, updateObj);
     await this.userRepository.save(updatedUser);
 

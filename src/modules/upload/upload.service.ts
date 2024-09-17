@@ -24,9 +24,7 @@ export class UploadService {
     const links = [];
     const bucketName = this.configService.get('BUCKET_NAME');
     files.forEach((file) => {
-      const key = `${path}/${Date.now().toString()}-${user_id}-${
-        file.originalname
-      }`;
+      const key = `${path}/${Date.now().toString()}-${user_id}-${file.originalname}`;
       const promise = this.uploadFormat(key, file);
       ListPromise.push(promise);
       links.push({
@@ -37,7 +35,7 @@ export class UploadService {
     });
 
     await Promise.all(ListPromise);
-    
+
     return links;
   }
 

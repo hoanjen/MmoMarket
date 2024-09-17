@@ -15,7 +15,6 @@ import {
 import { SortBy } from '../product.constant';
 
 export class GetProductByQueryDto {
-
   @ApiProperty({
     required: false,
   })
@@ -35,9 +34,7 @@ export class GetProductByQueryDto {
     example: 10,
     required: false,
   })
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @IsNumber()
   @IsOptional()
   readonly limit: number;
@@ -46,9 +43,7 @@ export class GetProductByQueryDto {
     example: 1,
     required: false,
   })
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @IsNumber()
   @IsOptional()
   readonly page: number;
@@ -62,7 +57,7 @@ export class GetProductByQueryDto {
   readonly sortBy: SortBy;
 }
 
-export class GetCategoryTypeDto{
+export class GetCategoryTypeDto {
   @ApiProperty({
     example: 'Id of category',
     required: false,

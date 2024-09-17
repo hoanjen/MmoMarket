@@ -1,4 +1,4 @@
 export enum PayMent {
   WITHDRAW = 'WITHDRAW',
-  DEPOSIT = 'DEPOSIT'
+  DEPOSIT = 'DEPOSIT',
 }

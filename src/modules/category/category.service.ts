@@ -30,11 +30,7 @@ export class CategoryService {
   async findCategoryTypeById(id: string) {
     return await this.categoryTypeRepository.findOne({ where: { id } });
   }
-  async getCategoryOption(
-    limit?: number,
-    page?: number,
-    category_id?: string,
-  ) {
+  async getCategoryOption(limit?: number, page?: number, category_id?: string) {
     let results;
     if (category_id) {
       results = await this.categoryRepository.findOne({
@@ -49,8 +45,8 @@ export class CategoryService {
         take: vlimit,
         skip: skip,
         relations: {
-          category_types: true
-        }
+          category_types: true,
+        },
       });
       const totalPages = Math.ceil(total / vlimit);
       const nextPage = vpage < totalPages ? vpage + 1 : null;
@@ -58,14 +54,17 @@ export class CategoryService {
       results = result;
       return { results, previousPage, totalPages, nextPage };
     }
-    return {results};
+    return { results };
   }
   async getCategory(getCategoryInput: GetCategoryDto) {
-    
-    const categoryService = this.categoryRepository.find({where: {type: TypeCategory.SERVICE}});
-    const categoryProduct = this.categoryRepository.find({where: {type: TypeCategory.PRODUCT}});
+    const categoryService = this.categoryRepository.find({
+      where: { type: TypeCategory.SERVICE },
+    });
+    const categoryProduct = this.categoryRepository.find({
+      where: { type: TypeCategory.PRODUCT },
+    });
 
-    const results = await Promise.all([categoryProduct,categoryService]);
+    const results = await Promise.all([categoryProduct, categoryService]);
     return ReturnCommon({
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,

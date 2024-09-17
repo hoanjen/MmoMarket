@@ -20,7 +20,7 @@ export class CreateDataProductDto {
     example: [
       {
         account: 'acount',
-        password: 'password'
+        password: 'password',
       },
     ],
   })
@@ -66,13 +66,11 @@ export class ItemDataProductBuyDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   readonly quantity: number;
 }
 
-export class IdVansProductDto{
+export class IdVansProductDto {
   @ApiProperty({
     example: 'vans_product_id',
     required: true,

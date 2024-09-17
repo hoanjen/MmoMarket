@@ -5,9 +5,6 @@ export function ReturnCommon(payload: IResponseCommon): IResponseCommon {
     status: EResponse.SUCCESS,
     statusCode: payload.statusCode,
     data: payload.data,
-    message:
-      payload.message && typeof payload.message === 'string'
-        ? [payload.message]
-        : payload.message,
+    message: payload.message && typeof payload.message === 'string' ? [payload.message] : payload.message,
   };
 }

@@ -1,4 +1,3 @@
-
 import { User } from 'src/modules/user/entity/user.entity';
 import {
   Entity,
@@ -28,7 +27,7 @@ export class Balance {
   user_id: string;
 
   @OneToOne(() => User, (user) => user.balance)
-  @JoinColumn({name: 'user_id'})
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @CreateDateColumn()

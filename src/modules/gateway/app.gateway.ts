@@ -1,20 +1,27 @@
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { WsException } from '@nestjs/websockets';
 import { WsExceptionFilter } from 'src/common/exceptions/exceptionsFilterWs';
 import { WsAuthGuard } from './ws.guard';
-import { createClient } from 'redis';
 import { GatewayService } from './gateway.service';
 
 declare module 'socket.io' {
   interface Socket {
     user: {
-      sub: string,
-      type: string,
-      username: string
+      sub: string;
+      type: string;
+      username: string;
     };
   }
 }
@@ -24,19 +31,16 @@ declare module 'socket.io' {
   namespace: 'chat',
   cors: {
     origin: '*',
-  }
+  },
 })
 export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
-
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly gatewayService: GatewayService,
-  ) {
-
-  }
+  ) {}
 
   onModuleInit() {
     this.server.on('connection', (socket) => {
@@ -59,7 +63,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
       await this.gatewayService.setSocketId(user.payload.sub, client.id);
       console.log('User connected:', user.payload.sub);
     } catch (error) {
-      client.emit('exception', error)
+      client.emit('exception', error);
       client.disconnect();
     }
   }
@@ -81,13 +85,13 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
       await this.gatewayService.delSocketId(user.payload.sub);
       client.disconnect();
     } catch (error) {
-      client.emit('exception', error)
+      client.emit('exception', error);
     }
   }
 
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: any): string {
-    throw new WsException('aaa')
+    throw new WsException('aaa');
     return 'Hello world!';
   }
 

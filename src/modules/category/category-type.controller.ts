@@ -22,20 +22,14 @@ export class CategoryTypeController {
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Create CategoryType' })
   @Post()
-  async createCategoryType(
-    @Body() createCategoryTypeInput: CreateCategoryTypeDto,
-  ) {
+  async createCategoryType(@Body() createCategoryTypeInput: CreateCategoryTypeDto) {
     return this.categoryTypeService.createCategoryType(createCategoryTypeInput);
   }
 
   @IsPublic()
   @Get('/:category_type_id')
   @ApiOperation({ summary: 'Get Product Of CategoryType' })
-  async projectOfCategoryType(
-    @Param() getProductOfCategoryTypeInput: GetProductOfCategoryTypeDto,
-  ) {
-    return this.categoryTypeService.getProductOfCategoryType(
-      getProductOfCategoryTypeInput,
-    );
+  async projectOfCategoryType(@Param() getProductOfCategoryTypeInput: GetProductOfCategoryTypeDto) {
+    return this.categoryTypeService.getProductOfCategoryType(getProductOfCategoryTypeInput);
   }
 }

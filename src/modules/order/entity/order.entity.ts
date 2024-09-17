@@ -1,10 +1,20 @@
-import { User } from "src/modules/user/entity/user.entity";
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
-import { Discount } from "./discount.entity";
-import { DataProductOrder } from "./data-product-order.entity";
-import { VansProduct } from "src/modules/product/entity/vans-product.entity";
+import { User } from 'src/modules/user/entity/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Discount } from './discount.entity';
+import { DataProductOrder } from './data-product-order.entity';
+import { VansProduct } from 'src/modules/product/entity/vans-product.entity';
 
-export const ORDER_ENTITY = 'orders'
+export const ORDER_ENTITY = 'orders';
 
 @Entity(ORDER_ENTITY)
 export class Order {

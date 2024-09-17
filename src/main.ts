@@ -22,10 +22,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-    const whiteList = configService
-      .get<string>('app.whiteList')
-      .split(',');
-      
+  const whiteList = configService.get<string>('app.whiteList').split(',');
+
   app.enableCors({
     origin: function (origin, callback) {
       if (whiteList.indexOf(origin) !== -1 || !origin) {
@@ -34,16 +32,16 @@ async function bootstrap() {
         throw new BadRequestException('error');
       }
     },
-    credentials: true,    
+    credentials: true,
     allowedHeaders:
       'Origin, X-CSRF-TOKEN, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, channel, request-id, Authorization, x-custom-lang ,',
     methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS,PATCH',
   });
-  
+
   //redis
   const redisIoAdapter = new RedisIoAdapter(app);
   await redisIoAdapter.connectToRedis();
-  
+
   app.useWebSocketAdapter(redisIoAdapter);
   //pipe + filter
   app.useGlobalPipes(new ValidationPipe({ transform: true }));

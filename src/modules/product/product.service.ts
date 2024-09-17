@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  forwardRef,
-} from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { GetProductDto } from './dtos/get-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, QueryRunner, Repository } from 'typeorm';
@@ -35,11 +29,8 @@ export class ProductService {
   }
 
   async createProduct(user_id: string, createProductInput: CreateProductDto) {
-    const { category_type_id, description, sub_title, title, image } =
-      createProductInput;
-    const categoryType = await this.categoryService.findCategoryTypeById(
-      category_type_id,
-    );
+    const { category_type_id, description, sub_title, title, image } = createProductInput;
+    const categoryType = await this.categoryService.findCategoryTypeById(category_type_id);
 
     if (!categoryType) {
       throw new BadRequestException('category_type_id not found !');
@@ -59,21 +50,13 @@ export class ProductService {
     });
   }
 
-
-  async getCategoryTypeByQuery(getCategoryTypeInput : GetCategoryTypeDto){
-    const { category_id ,category_type_ids} = getCategoryTypeInput;
+  async getCategoryTypeByQuery(getCategoryTypeInput: GetCategoryTypeDto) {
+    const { category_id, category_type_ids } = getCategoryTypeInput;
     let listCategoryType = [];
     if (!category_type_ids?.length) {
-      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
-        category_id,
-      );
-
+      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(category_id);
     } else {
-      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(
-        null,
-        category_type_ids,
-      );
-
+      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(null, category_type_ids);
     }
     return ReturnCommon({
       message: 'Get categorytype success',
@@ -85,12 +68,11 @@ export class ProductService {
     });
   }
 
-
   async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
     const { category_type_ids, keyword, limit, page, sortBy } = getProductByQueryInput;
-    const categoryType = await this.categoryTypeService.getCategoryTypeByOption(null,category_type_ids);
-    if(category_type_ids.length !== categoryType.length) {
-      throw new BadRequestException('category_type_ids invalid')
+    const categoryType = await this.categoryTypeService.getCategoryTypeByOption(null, category_type_ids);
+    if (category_type_ids.length !== categoryType.length) {
+      throw new BadRequestException('category_type_ids invalid');
     }
     const vlimit = limit ? limit : 100;
     const vpage = page ? page : 1;
@@ -102,12 +84,9 @@ export class ProductService {
       .leftJoinAndSelect('products.vans_products', 'vans_product');
 
     if (keyword) {
-      productsQuery = productsQuery.andWhere(
-        'LOWER(products.title) LIKE LOWER(:keyword)',
-        {
-          keyword: `%${keyword}%`,
-        },
-      );
+      productsQuery = productsQuery.andWhere('LOWER(products.title) LIKE LOWER(:keyword)', {
+        keyword: `%${keyword}%`,
+      });
     }
     if (sortBy === SortBy.TRENDING) {
       productsQuery = productsQuery.orderBy('products.quantity_sold', 'DESC');
@@ -119,10 +98,7 @@ export class ProductService {
       productsQuery = productsQuery.orderBy('products.maxPrice', 'DESC');
     }
 
-    const [products, total] = await productsQuery
-      .take(vlimit)
-      .skip(skip)
-      .getManyAndCount();
+    const [products, total] = await productsQuery.take(vlimit).skip(skip).getManyAndCount();
 
     const totalPages = Math.ceil(total / vlimit);
     const nextPage = vpage < totalPages ? vpage + 1 : null;

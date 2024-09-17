@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, UseGuards ,Request, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Request, Body, Param, Query } from '@nestjs/common';
 import { IsPublic, Role, Roles, User } from 'src/common/decorators/decorator.common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
@@ -27,8 +27,4 @@ export class CategoryController {
   async createCategory(@Body() createCategoryInput: CreateCategoryDto) {
     return this.categoryService.createCategory(createCategoryInput);
   }
-
-  
-
-  
 }

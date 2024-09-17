@@ -18,7 +18,7 @@ export class Password {
   @Generated('uuid')
   id: string;
 
-  @Column('string', {nullable: true})
+  @Column('string', { nullable: true })
   user_id: string;
 
   @OneToOne(() => User, (user) => user.password)

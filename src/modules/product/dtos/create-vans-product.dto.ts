@@ -30,9 +30,7 @@ export class CreateVansProductDto {
   })
   readonly description: string;
 
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @IsNumber()
   @ApiProperty({
     example: '100000',

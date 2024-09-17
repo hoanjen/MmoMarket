@@ -19,10 +19,12 @@ import { GatewayModule } from '../gateway/gateway.module';
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.jwtSecret'),
-        signOptions: {expiresIn: configService.get<string>('jwt.tokenExpiresTime')}
+        signOptions: {
+          expiresIn: configService.get<string>('jwt.tokenExpiresTime'),
+        },
       }),
       inject: [ConfigService],
-      global:true
+      global: true,
     }),
   ],
   controllers: [AuthController],

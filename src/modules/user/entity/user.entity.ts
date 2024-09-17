@@ -57,9 +57,7 @@ export class User {
   google_id: string;
 
   @Column({ nullable: true })
-  @Transform(({ value }) =>
-    typeof value === 'string' ? new Date(value) : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? new Date(value) : value))
   dob: Date;
 
   @Column({
