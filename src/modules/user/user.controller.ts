@@ -18,11 +18,15 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUserByIdDto } from './dtos/find-user-by-id.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Gateway } from '../gateway/app.gateway';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly gateway: Gateway
+  ) {}
 
   @IsPublic()
   @Post()
@@ -50,5 +54,12 @@ export class UserController {
   @ApiOperation({ summary: 'update profile by token' })
   async updateProfile(@Request() req:any ,@Body() updateProfileInput : UpdateProfileDto) {
     return await this.userService.updateProfile(req,updateProfileInput);
+  }
+
+  @ApiBearerAuth()
+  @Post('send')
+  @ApiOperation({ summary: 'send' })
+  async send() {
+    this.gateway.onMessageUserToUser('dad08553-fa36-426f-a13b-c54ebb7519e9','be8b219d-604c-41d7-8354-fce4ad873309')
   }
 }

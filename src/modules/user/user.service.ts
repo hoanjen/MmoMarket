@@ -104,9 +104,7 @@ export class UserService {
         google_id: '123',
         dob,
       });
-      console.log(111);
       const user = await queryRunner.manager.save(newUser);
-      console.log(222);
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({

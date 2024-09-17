@@ -10,9 +10,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Role } from '../user/entity/role.entity';
 import { User } from '../user/entity/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GatewayModule } from '../gateway/gateway.module';
 @Module({
   imports: [
     UserModule,
+    GatewayModule,
     TypeOrmModule.forFeature([Role, User]),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({

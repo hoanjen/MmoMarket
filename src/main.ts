@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { LoggingInterceptor } from './common/interceptors/interceptor.common';
 import { HttpExceptionFilter } from './common/exceptions/exceptionsFilter';
+import { RedisIoAdapter } from './modules/gateway/redis-adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,14 +34,18 @@ async function bootstrap() {
         throw new BadRequestException('error');
       }
     },
-    credentials: true,
+    credentials: true,    
     allowedHeaders:
       'Origin, X-CSRF-TOKEN, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe, channel, request-id, Authorization, x-custom-lang ,',
     methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS,PATCH',
   });
-
+  
+  //redis
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+  
+  app.useWebSocketAdapter(redisIoAdapter);
   //pipe + filter
- 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor());

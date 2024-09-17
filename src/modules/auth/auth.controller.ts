@@ -9,6 +9,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
+import { Gateway } from '../gateway/app.gateway';
 
 
 @IsPublic()
@@ -22,6 +23,13 @@ export class AuthController {
   @Post('sign-up')
   async signUp(@Body() signUpInput: SignUpDto) {
     return this.authService.signUp(signUpInput);
+  }
+
+  @IsPublic()
+  @ApiOperation({ summary: 'test' })
+  @Post('test')
+  async test(@Body() signInInput: SignInDto) {
+  
   }
 
   @IsPublic()
