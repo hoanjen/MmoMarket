@@ -15,6 +15,8 @@ import { UploadModule } from './modules/upload/upload.module';
 import { OrderModule } from './modules/order/order.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { GatewayModule } from './modules/gateway/gateway.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 
 @Module({
@@ -44,6 +46,8 @@ import { PaymentModule } from './modules/payment/payment.module';
     OrderModule,
     CommentModule,
     PaymentModule,
+    GatewayModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
