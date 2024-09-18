@@ -14,9 +14,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-
-
-
 export class BuyVansProductDto {
   @ApiProperty({
     example: 'id vans product',
@@ -25,9 +22,7 @@ export class BuyVansProductDto {
   @IsNotEmpty()
   readonly vans_product_id: string;
 
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @ApiProperty({
     example: 'quantity',
   })

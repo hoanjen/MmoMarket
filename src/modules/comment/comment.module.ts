@@ -7,8 +7,8 @@ import { OrderModule } from '../order/order.module';
 import { ProductModule } from '../product/product.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment]),OrderModule,ProductModule],
+  imports: [TypeOrmModule.forFeature([Comment]), OrderModule, ProductModule],
   providers: [CommentService],
-  controllers: [CommentController]
+  controllers: [CommentController],
 })
 export class CommentModule {}

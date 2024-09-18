@@ -1,7 +1,9 @@
 import { FileValidator, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class CustomFileValidatorForFile extends FileValidator<{ allowedType: string }> {
+export class CustomFileValidatorForFile extends FileValidator<{
+  allowedType: string;
+}> {
   constructor(private readonly allowedType: string) {
     super({ allowedType });
   }

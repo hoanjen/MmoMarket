@@ -6,11 +6,9 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService, private configService: ConfigService) { }
+  constructor(private jwtService: JwtService, private configService: ConfigService) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const client = context.switchToWs().getClient();
     const token = client.handshake?.query?.token;
     if (!token) {
@@ -23,10 +21,8 @@ export class WsAuthGuard implements CanActivate {
       client['user'] = user.payload;
     } catch (error) {
       throw new WsException(`${error.name}`);
-
     }
 
     return true;
   }
-
 }

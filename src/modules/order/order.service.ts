@@ -9,7 +9,6 @@ import { DataProductOrder } from './entity/data-product-order.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
 
-
 @Injectable()
 export class OrderService {
   constructor(
@@ -24,9 +23,8 @@ export class OrderService {
     private readonly vansProductService: VansProductService,
   ) {}
 
-
   async createOrder(req: any, buyVansProductInput: BuyVansProductDto) {
-    let { discount_id, vans_product_id, quantity } = buyVansProductInput;
+    const { discount_id, vans_product_id, quantity } = buyVansProductInput;
     let isDiscount;
     if (discount_id) {
       try {
@@ -50,10 +48,7 @@ export class OrderService {
     try {
       await queryRunner.startTransaction();
 
-      const data_products = await this.vansProductService.getDataProduct(
-        {vans_product_id,quantity},
-        queryRunner
-      );
+      const data_products = await this.vansProductService.getDataProduct({ vans_product_id, quantity }, queryRunner);
 
       const newOrder = this.orderRepository.create({
         vans_product_id,
@@ -61,13 +56,12 @@ export class OrderService {
         discount_id: discount_id === '' ? null : discount_id,
       });
       const order = await queryRunner.manager.save(newOrder);
-      
+
       const newDataProductOrders = data_products.map((item) => ({
         order_id: order.id,
         data_product_id: item.id,
       }));
-      await queryRunner.manager.insert(DataProductOrder,newDataProductOrders);
-      
+      await queryRunner.manager.insert(DataProductOrder, newDataProductOrders);
 
       await queryRunner.commitTransaction();
       await queryRunner.release();
@@ -93,7 +87,7 @@ export class OrderService {
       vans_product_ids.add(item.vans_product_id);
     });
     const vansProduct = await this.vansProductService.getVansProductIdByProductId(product_id);
-    for(let i = 0; i < vansProduct.length; i++){
+    for (let i = 0; i < vansProduct.length; i++) {
       if (vans_product_ids.has(vansProduct[i].id)) {
         return true;
       }

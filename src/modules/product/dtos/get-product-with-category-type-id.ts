@@ -21,9 +21,7 @@ export class GetProductWithCategoryTypeIdDto {
   @IsOptional()
   readonly categorytype_id: string;
 
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @IsNumber()
   @IsOptional()
   @ApiProperty({
@@ -32,9 +30,7 @@ export class GetProductWithCategoryTypeIdDto {
   })
   readonly limit: number;
 
-  @Transform(({ value }) =>
-    typeof value === 'number' ? value : parseInt(value),
-  )
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
   @IsNumber()
   @IsOptional()
   @ApiProperty({

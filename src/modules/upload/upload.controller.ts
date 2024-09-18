@@ -29,19 +29,19 @@ export class UploadController {
   @Post()
   @ApiFiles('files')
   async uploadFile(
-    @Request() req:any,
+    @Request() req: any,
     @UploadedFiles(
       new ParseFilePipeBuilder()
-      .addValidator(new CustomFileValidatorForFile('image/png,image/jpg,image/jpeg'))
-      .addMaxSizeValidator({
-        maxSize: 300000,
-        message: 'File is too large'
-      })
-      .build()
+        .addValidator(new CustomFileValidatorForFile('image/png,image/jpg,image/jpeg'))
+        .addMaxSizeValidator({
+          maxSize: 300000,
+          message: 'File is too large',
+        })
+        .build(),
     )
     files: Array<Express.Multer.File>,
   ) {
-    const path = 'image'
-    return this.uploadService.uploadFile(req.user.sub, path,files);
+    const path = 'image';
+    return this.uploadService.uploadFile(req.user.sub, path, files);
   }
 }

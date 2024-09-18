@@ -13,7 +13,6 @@ import {
 import { Category } from './category.entity';
 import { Product } from 'src/modules/product/entity/product.entity';
 
-
 export const CATEGORY_TYPE_MODEL = 'category_types';
 
 @Entity(CATEGORY_TYPE_MODEL)

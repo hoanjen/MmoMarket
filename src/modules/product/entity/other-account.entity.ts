@@ -12,7 +12,6 @@ import {
 } from 'typeorm';
 import { DataProduct } from './data-product.entity';
 
-
 export const OTHER_ACCOUNT_MODEL = 'other_accounts';
 
 @Entity(OTHER_ACCOUNT_MODEL)

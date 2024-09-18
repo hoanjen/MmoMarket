@@ -14,19 +14,19 @@ export class CommentService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly productService: ProductService,
-    private readonly orderService: OrderService
-  ){}
+    private readonly orderService: OrderService,
+  ) {}
 
   async createComment(createCommentInput: CreateCommentDto, user_id: string) {
     const { content, product_id, star, image } = createCommentInput;
     const isProduct = await this.productService.getProductById(product_id);
-    if(!isProduct){
+    if (!isProduct) {
       throw new BadRequestException('Product does not exist');
     }
 
     const isAccess = await this.orderService.isBuyProduct(product_id, user_id);
 
-    if(!isAccess){
+    if (!isAccess) {
       throw new BadRequestException('You cannot rate a product without purchasing it');
     }
 
@@ -48,6 +48,5 @@ export class CommentService {
         comment,
       },
     });
-
   }
 }

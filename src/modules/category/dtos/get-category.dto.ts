@@ -13,6 +13,4 @@ import {
 } from 'class-validator';
 import { TypeCategory } from '../category.constant';
 
-export class GetCategoryDto {
-  
-}
+export class GetCategoryDto {}

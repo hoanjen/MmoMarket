@@ -18,7 +18,6 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ChatModule } from './modules/chat/chat.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,9 +28,7 @@ import { ChatModule } from './modules/chat/chat.module';
         abortEarly: true,
       },
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('development', 'production', 'test', 'provision')
-          .default('development'),
+        NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number().default(3000),
       }),
       isGlobal: true,

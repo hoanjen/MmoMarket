@@ -1,9 +1,6 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  CATEGORY_TYPE_MODEL,
-  CategoryType,
-} from './entity/category-type.entity';
+import { CATEGORY_TYPE_MODEL, CategoryType } from './entity/category-type.entity';
 import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
@@ -25,27 +22,22 @@ export class CategoryTypeService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async getCategoryTypeByOption(
-    category_id?: string,
-    category_type_ids?: string[],
-  ) {
+  async getCategoryTypeByOption(category_id?: string, category_type_ids?: string[]) {
     try {
-      let query =
-      this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
-    if (category_id) {
-      query = query.where('category_types.category_id = :category_id', {
-        category_id: category_id,
-      });
-    } else if (category_type_ids?.length) {
-      query = query.where('category_types.id IN (:...ids)', {
-        ids: [...category_type_ids],
-      });
-    }
-    var categoryType = await query.getMany();
-    
+      let query = this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
+      if (category_id) {
+        query = query.where('category_types.category_id = :category_id', {
+          category_id: category_id,
+        });
+      } else if (category_type_ids?.length) {
+        query = query.where('category_types.id IN (:...ids)', {
+          ids: [...category_type_ids],
+        });
+      }
+      var categoryType = await query.getMany();
     } catch (error) {
       throw new BadRequestException('category_type_ids invalid');
-    } 
+    }
     return categoryType;
   }
 
@@ -79,9 +71,7 @@ export class CategoryTypeService {
     });
   }
 
-  async getProductOfCategoryType(
-    getProductOfCategoryTypeInput: GetProductOfCategoryTypeDto,
-  ) {
+  async getProductOfCategoryType(getProductOfCategoryTypeInput: GetProductOfCategoryTypeDto) {
     const { category_type_id, sortType } = getProductOfCategoryTypeInput;
     let categoryType;
 
@@ -93,14 +83,7 @@ export class CategoryTypeService {
         .leftJoin('product.user', 'user')
         .leftJoin('product.vans_product', 'vans_product')
         .orderBy('vans_product.price', sortType === 'ASC' ? 'ASC' : 'DESC')
-        .select([
-          'categoryType',
-          'product',
-          'user.id',
-          'user.full_name',
-          'vans_product',
-          'product.id',
-        ])
+        .select(['categoryType', 'product', 'user.id', 'user.full_name', 'vans_product', 'product.id'])
         .getOne();
     } else {
       //sort by quantity sold
@@ -111,14 +94,7 @@ export class CategoryTypeService {
         .leftJoin('product.user', 'user')
         .leftJoin('product.vans_product', 'vans_product')
         .orderBy('product.quantity_sold', 'DESC')
-        .select([
-          'categoryType',
-          'product',
-          'user.id',
-          'user.full_name',
-          'vans_product',
-          'product.id',
-        ])
+        .select(['categoryType', 'product', 'user.id', 'user.full_name', 'vans_product', 'product.id'])
         .getOne();
     }
 

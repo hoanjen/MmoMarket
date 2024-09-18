@@ -1,9 +1,17 @@
-import { Product } from "src/modules/product/entity/product.entity";
-import { User } from "src/modules/user/entity/user.entity";
-import { Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Product } from 'src/modules/product/entity/product.entity';
+import { User } from 'src/modules/user/entity/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-
-const COMMENT_ENTITY = 'comments'
+const COMMENT_ENTITY = 'comments';
 
 @Entity(COMMENT_ENTITY)
 export class Comment {
