@@ -21,6 +21,7 @@ import { Order } from 'src/modules/order/entity/order.entity';
 import { Comment } from 'src/modules/comment/entity/comment.entity';
 import { Balance } from 'src/modules/payment/entity/balance.entity';
 import { Transaction } from 'src/modules/payment/entity/transaction.entity';
+import { Member } from 'src/modules/chat/entity/member.entity';
 
 export const USER_MODEL = 'users';
 
@@ -97,6 +98,9 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @OneToMany(() => Member, (member) => member.user)
+  members: Member[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date
