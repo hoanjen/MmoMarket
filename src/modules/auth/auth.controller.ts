@@ -17,12 +17,6 @@ export class AuthController {
   async signUp(@Body() signUpInput: SignUpDto) {
     return this.authService.signUp(signUpInput);
   }
-
-  @IsPublic()
-  @ApiOperation({ summary: 'test' })
-  @Post('test')
-  async test(@Body() signInInput: SignInDto) {}
-
   @IsPublic()
   @ApiOperation({ summary: 'Signin' })
   @Post('signin')
