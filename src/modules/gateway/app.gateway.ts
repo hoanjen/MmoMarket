@@ -15,6 +15,7 @@ import { WsException } from '@nestjs/websockets';
 import { WsExceptionFilter } from 'src/common/exceptions/exceptionsFilterWs';
 import { WsAuthGuard } from './ws.guard';
 import { GatewayService } from './gateway.service';
+import { DataChat } from './interface/user-connect.interface';
 
 declare module 'socket.io' {
   interface Socket {
@@ -103,8 +104,15 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
     // throw new WsException('Missing token');
   }
 
-  async onMessageUserToUser(sender_id: string, receiver_id: string) {
+  async onMessageUserToUsers(sender_id: string, receiver_id: string) {
     const receiver_socket_id = await this.gatewayService.getSocketId(receiver_id);
-    this.server.to(receiver_socket_id).emit('message', { sender_id, message: 'abc' });
+    this.server.to(receiver_socket_id).emit('abc', { sender_id, message: 'abc' });
+  }
+
+  async onMessageToUsers(receiver_ids: string[], data: DataChat) {
+    const receiver_socket_ids = await this.gatewayService.getSocketIds(receiver_ids);
+    receiver_socket_ids.forEach((receiver_socket_id) => {
+      this.server.to(receiver_socket_id).emit('message', { data });
+    });
   }
 }

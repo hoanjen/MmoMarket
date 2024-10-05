@@ -52,11 +52,4 @@ export class UserController {
   async updateProfile(@Request() req: any, @Body() updateProfileInput: UpdateProfileDto) {
     return await this.userService.updateProfile(req, updateProfileInput);
   }
-
-  @ApiBearerAuth()
-  @Post('send')
-  @ApiOperation({ summary: 'send' })
-  async send() {
-    this.gateway.onMessageUserToUser('dad08553-fa36-426f-a13b-c54ebb7519e9', 'be8b219d-604c-41d7-8354-fce4ad873309');
-  }
 }

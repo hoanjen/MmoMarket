@@ -10,8 +10,8 @@ export class Group {
   @Generated('uuid')
   id: string;
 
-  @Column({ nullable: false })
-  group_name: number;
+  @Column({ nullable: true })
+  group_name: string;
 
   @Column({ nullable: false, type: 'enum', enum: GROUP_TYPE, default: GROUP_TYPE.SINGLE })
   group_type: GROUP_TYPE;

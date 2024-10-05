@@ -13,7 +13,7 @@ import {
 import { Group } from './group.entity';
 import { Message } from './message.entity';
 
-const MEMBER_ENTITY = 'comments';
+const MEMBER_ENTITY = 'members';
 
 @Entity(MEMBER_ENTITY)
 export class Member {
