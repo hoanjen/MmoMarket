@@ -22,6 +22,7 @@ import { Comment } from 'src/modules/comment/entity/comment.entity';
 import { Balance } from 'src/modules/payment/entity/balance.entity';
 import { Transaction } from 'src/modules/payment/entity/transaction.entity';
 import { Member } from 'src/modules/chat/entity/member.entity';
+import { Group } from 'src/modules/chat/entity/group.entity';
 
 export const USER_MODEL = 'users';
 
@@ -101,6 +102,9 @@ export class User {
 
   @OneToMany(() => Member, (member) => member.user)
   members: Member[];
+
+  @OneToOne(() => Group, (group) => group.user)
+  group: Group;
 
   @CreateDateColumn()
   created_at: Date; // Creation date

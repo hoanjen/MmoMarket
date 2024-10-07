@@ -9,5 +9,6 @@ export class FindUserByIdDto {
   @IsUUID()
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   readonly user_id: string;
 }

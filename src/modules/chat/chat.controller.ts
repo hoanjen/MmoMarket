@@ -10,8 +10,8 @@ import { GetMessageQueryDto } from './dtos/get-message.dto';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Join Chat' })
-  @Post('/joinchat')
+  @ApiOperation({ summary: 'Join Single Chat' })
+  @Post('/joinsinglechat')
   async joinSingleChat(@Body() joinSingleChatInput: JoinSingleChatDto, @Req() req: RequestAuth) {
     return this.chatService.joinSingleChat(joinSingleChatInput, req);
   }
