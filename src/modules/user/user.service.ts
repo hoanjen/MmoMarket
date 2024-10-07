@@ -28,8 +28,14 @@ export class UserService {
   ) {}
 
   async findUserById(findUserByIdInput: FindUserByIdDto) {
-    return await this.userRepository.findOne({
+    const res = await this.userRepository.findOne({
       where: { id: findUserByIdInput.user_id },
+    });
+    return ReturnCommon({
+      data: res,
+      message: 'Get user success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
     });
   }
 
