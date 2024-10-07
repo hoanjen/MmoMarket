@@ -35,7 +35,7 @@ export class UserController {
   @IsPublic()
   @Get('/:id')
   @ApiOperation({ summary: 'Find user by id' })
-  async findUserById(@Param() findUserByIdInput: FindUserByIdDto) {
+  async findUserById(@Query() findUserByIdInput: FindUserByIdDto) {
     return await this.userService.findUserById(findUserByIdInput);
   }
 

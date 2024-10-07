@@ -51,8 +51,10 @@ export class ChatService {
       throw new BadRequestException('You have already joined group');
     }
     const newGroup = this.groupRepository.create({
+      user_id: receiver_id,
       group_name: null,
       group_type: GROUP_TYPE.SINGLE,
+      group_avatar: null,
     });
 
     const newGroupSingle = await this.groupRepository.save(newGroup);
@@ -82,6 +84,7 @@ export class ChatService {
       .createQueryBuilder('group')
       .where('group.id = :group_id', { group_id })
       .innerJoinAndSelect('group.members', 'member')
+      .andWhere('member.user_id = :user_id', { user_id: req.user.sub })
       .getRawMany();
 
     if (!checkGroup.length) {
@@ -125,6 +128,7 @@ export class ChatService {
       .createQueryBuilder('member')
       .where('member.id IN (:...member_ids)', { member_ids })
       .innerJoinAndSelect('member.messages', 'message')
+      .innerJoinAndSelect('member.user', 'user')
       .innerJoinAndSelect('member.group', 'group')
       .orderBy('message.created_at', 'DESC')
       .getMany();
