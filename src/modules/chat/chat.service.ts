@@ -10,7 +10,7 @@ import { GROUP_TYPE } from './chat.constant';
 import { UserService } from '../user/user.service';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { Gateway } from '../gateway/app.gateway';
-import { GetMessageQueryDto } from './dtos/get-message.dto';
+import { GetSideBarChatQueryDto } from './dtos/get-message.dto';
 
 @Injectable()
 export class ChatService {
@@ -51,7 +51,6 @@ export class ChatService {
       throw new BadRequestException('You have already joined group');
     }
     const newGroup = this.groupRepository.create({
-      user_id: receiver_id,
       group_name: null,
       group_type: GROUP_TYPE.SINGLE,
       group_avatar: null,
@@ -84,59 +83,91 @@ export class ChatService {
       .createQueryBuilder('group')
       .where('group.id = :group_id', { group_id })
       .innerJoinAndSelect('group.members', 'member')
-      .andWhere('member.user_id = :user_id', { user_id: req.user.sub })
       .getRawMany();
 
     if (!checkGroup.length) {
       throw new BadRequestException('Group not found');
     }
+    let member = null;
     const user_ids = [];
-    const newMessages = checkGroup.map((value) => {
-      if (value.member_user_id !== req.user.sub) {
-        user_ids.push(value.member_user_id);
-      }
-      return { member_id: value.member_id, text, file_name, file, sender_id: req.user.sub };
+    for (const item of checkGroup) {
+      item.member_user_id === req.user.sub ? (member = item) : user_ids.push(item.member_user_id);
+    }
+    if (!member) {
+      throw new BadRequestException(`You are not member of ${group_id} group`);
+    }
+    const newMessage = this.messageRepository.create({
+      group_id,
+      file,
+      file_name,
+      member_id: member.member_id,
+      user_id: req.user.sub,
+      text,
     });
-    const messages = await this.messageRepository.insert(newMessages);
+    const messages = await this.messageRepository.save(newMessage);
     await this.gateway.onMessageToUsers(user_ids, { file, file_name, text, sender_id: req.user.sub, group_id });
     return ReturnCommon({
-      data: messages.raw,
+      data: messages,
       message: 'Chat success',
       statusCode: HttpStatus.CREATED,
       status: EResponse.SUCCESS,
     });
   }
 
-  async getAllMessageByToken(getMessageQueryDtoInput: GetMessageQueryDto, req: RequestAuth) {
+  async getSideBarChatByToken(getSideBarDtoInput: GetSideBarChatQueryDto, req: RequestAuth) {
     const { user } = req;
-    const { cursor, limit } = getMessageQueryDtoInput;
-    const groupByMemberId = this.memberRepository
+    const { cursor, limit } = getSideBarDtoInput;
+    const getGroups = await this.memberRepository
       .createQueryBuilder('member')
       .where('member.user_id = :user_id', { user_id: user.sub })
-      .innerJoin('member.messages', 'message')
-      .select('member.id', 'member_id')
-      .addSelect('MAX(message.created_at)', 'max_created')
-      .groupBy('member.id')
-      .orderBy('max_created', 'DESC');
-    if (cursor !== 'first') {
-      groupByMemberId.andWhere('message.created_at < :cursor', { cursor }).take(limit);
-    }
-    const member = await groupByMemberId.getRawMany();
-
-    const member_ids = member.map((item) => item.member_id);
-    const getMessages = await this.memberRepository
-      .createQueryBuilder('member')
-      .where('member.id IN (:...member_ids)', { member_ids })
-      .innerJoinAndSelect('member.messages', 'message')
-      .innerJoinAndSelect('member.user', 'user')
-      .innerJoinAndSelect('member.group', 'group')
-      .orderBy('message.created_at', 'DESC')
       .getMany();
+    const group_ids = getGroups.map((item) => item.group_id);
+    let isCursor = new Date().toISOString();
+    if (cursor !== 'first') {
+      isCursor = cursor;
+    }
+    const messageSideBar = await this.groupRepository.query(
+      `
+      SELECT 
+        g.id AS group_id,
+        g.group_name AS group_name,
+        m.*,
+        u.*
+      FROM 
+        groups g
+      INNER JOIN
+        messages m ON m.group_id = g.id
+      INNER JOIN
+        users u ON u.id = m.user_id
+      INNER JOIN (
+          SELECT 
+            group_id, MAX(created_at) AS latest_message
+          FROM 
+            messages
+          GROUP BY 
+            group_id
+      ) AS latest ON latest.group_id = m.group_id AND latest.latest_message = m.created_at
+      WHERE g.id = ANY ($1) AND m.created_at < ($2)
+      ORDER BY 
+        m.created_at DESC
+      LIMIT ($3);
+      `,
+      [group_ids, isCursor, limit],
+    );
 
-    const messages = member_ids.map((id) => getMessages.find((item) => item.id === id));
+    // const messageSideBar = await this.groupRepository
+    //   .createQueryBuilder('group')
+    //   .where('group.id IN (:...group_ids)', { group_ids })
+    //   .innerJoin('group.messages', 'message')
+    //   .select('group.id', 'group_id')
+    //   .addSelect('group', 'group')
+    //   .addSelect('MAX(message.created_at)', 'max_created')
+    //   .groupBy('group.id')
+    //   .orderBy('max_created', 'DESC')
+    //   .getRawMany();
 
     return ReturnCommon({
-      data: messages,
+      data: messageSideBar,
       message: 'Get message success',
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,

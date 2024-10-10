@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class GetMessageQueryDto {
+export class GetSideBarChatQueryDto {
   @ApiProperty({
     example: 10,
   })
