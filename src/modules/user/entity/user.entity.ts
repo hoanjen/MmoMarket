@@ -23,6 +23,7 @@ import { Balance } from 'src/modules/payment/entity/balance.entity';
 import { Transaction } from 'src/modules/payment/entity/transaction.entity';
 import { Member } from 'src/modules/chat/entity/member.entity';
 import { Group } from 'src/modules/chat/entity/group.entity';
+import { Message } from 'src/modules/chat/entity/message.entity';
 
 export const USER_MODEL = 'users';
 
@@ -38,9 +39,6 @@ export class User {
   email: string;
 
   @Column({ nullable: true })
-  full_name: string;
-
-  @Column({ nullable: true })
   first_name: string;
 
   @Column({ nullable: true })
@@ -49,7 +47,7 @@ export class User {
   @Column({ nullable: true })
   middle_name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false, unique: true })
   username: string;
 
   @Column({ nullable: false })
@@ -103,22 +101,12 @@ export class User {
   @OneToMany(() => Member, (member) => member.user)
   members: Member[];
 
-  @OneToOne(() => Group, (group) => group.user)
-  group: Group;
+  @OneToMany(() => Message, (message) => message.user)
+  messages: Message[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date
 
   @UpdateDateColumn()
   updated_at: Date;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async validateEntity(): Promise<void> {
-    if (this.first_name && this.first_name) {
-      this.full_name = this.middle_name
-        ? `${this.last_name} ${this.middle_name} ${this.first_name}`
-        : `${this.last_name} ${this.first_name}`;
-    }
-  }
 }

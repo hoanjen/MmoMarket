@@ -35,9 +35,6 @@ export class Member {
   @JoinColumn({ name: 'group_id' })
   group: Group;
 
-  @OneToMany(() => Message, (message) => message.member)
-  messages: Message[];
-
   @CreateDateColumn()
   created_at: Date;
 

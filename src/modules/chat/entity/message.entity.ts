@@ -9,6 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Member } from './member.entity';
+import { Group } from './group.entity';
+import { User } from 'src/modules/user/entity/user.entity';
 
 const MESSAGE_ENTITY = 'messages';
 
@@ -31,11 +33,18 @@ export class Message {
   member_id: string;
 
   @Column({ nullable: false })
-  sender_id: string;
+  group_id: string;
 
-  @ManyToOne(() => Member, (member) => member.messages)
-  @JoinColumn({ name: 'member_id' })
-  member: Member;
+  @Column({ nullable: false })
+  user_id: string;
+
+  @ManyToOne(() => User, (user) => user.messages)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => Group, (group) => group.messages)
+  @JoinColumn({ name: 'group_id' })
+  group: Group;
 
   @CreateDateColumn()
   created_at: Date;

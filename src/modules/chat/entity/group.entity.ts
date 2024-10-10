@@ -12,6 +12,7 @@ import {
 import { Member } from './member.entity';
 import { GROUP_TYPE } from '../chat.constant';
 import { User } from 'src/modules/user/entity/user.entity';
+import { Message } from './message.entity';
 
 const GROUP_ENTITY = 'groups';
 
@@ -27,18 +28,14 @@ export class Group {
   @Column({ nullable: true })
   group_avatar: string;
 
-  @Column({ nullable: true })
-  user_id: string;
-
   @Column({ nullable: false, type: 'enum', enum: GROUP_TYPE, default: GROUP_TYPE.SINGLE })
   group_type: GROUP_TYPE;
 
   @OneToMany(() => Member, (member) => member.group)
   members: Member[];
 
-  @OneToOne(() => User, (user) => user.group)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @OneToMany(() => Message, (message) => message.group)
+  messages: Message[];
 
   @CreateDateColumn()
   created_at: Date;
