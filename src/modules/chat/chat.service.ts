@@ -135,7 +135,7 @@ export class ChatService {
         u.first_name,
         u.last_name,
         u.username,
-        u.avatar,
+        u.avatar
       FROM 
         groups g
       INNER JOIN
