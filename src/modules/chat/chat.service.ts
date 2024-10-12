@@ -10,7 +10,7 @@ import { GROUP_TYPE } from './chat.constant';
 import { UserService } from '../user/user.service';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { Gateway } from '../gateway/app.gateway';
-import { GetSideBarChatQueryDto } from './dtos/get-message.dto';
+import { GetMessageByGroupIdDto, GetSideBarChatQueryDto } from './dtos/get-message.dto';
 
 @Injectable()
 export class ChatService {
@@ -171,6 +171,39 @@ export class ChatService {
 
     return ReturnCommon({
       data: messageSideBar,
+      message: 'Get SideBar success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async getMessageByGroupId(getMessageByGroupIdInput: GetMessageByGroupIdDto, req: RequestAuth) {
+    const { cursor, limit, group_id } = getMessageByGroupIdInput;
+    let isCursor = new Date().toISOString();
+    if (cursor !== 'first') {
+      isCursor = cursor;
+    }
+    const isGroup = await this.groupRepository
+      .createQueryBuilder('group')
+      .where('group.id = :group_id', { group_id })
+      .innerJoinAndSelect('group.members', 'member')
+      .andWhere('member.user_id =:user_id', { user_id: req.user.sub })
+      .getRawMany();
+
+    if (isGroup.length === 0) {
+      throw new BadRequestException(`You are not user of group${group_id}`);
+    }
+
+    const messages = await this.messageRepository
+      .createQueryBuilder('message')
+      .where('message.group_id = :group_id', { group_id })
+      .andWhere('message.created_at < :isCursor', { isCursor })
+      .innerJoinAndSelect('message.user', 'user')
+      .orderBy('message.created_at', 'DESC')
+      .limit(limit)
+      .getMany();
+    return ReturnCommon({
+      data: messages,
       message: 'Get message success',
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,

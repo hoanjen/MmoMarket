@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateMessageDto, JoinSingleChatDto } from './dtos/create-message.dto';
 import { RequestAuth } from 'src/common/interface.common';
 import { ChatService } from './chat.service';
-import { GetSideBarChatQueryDto } from './dtos/get-message.dto';
+import { GetMessageByGroupIdDto, GetSideBarChatQueryDto } from './dtos/get-message.dto';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -28,5 +28,12 @@ export class ChatController {
   @Get('/sidebar-chat')
   async getSideBarChat(@Query() getSideBarDtoInput: GetSideBarChatQueryDto, @Req() req: RequestAuth) {
     return this.chatService.getSideBarChatByToken(getSideBarDtoInput, req);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get Message By Group Id' })
+  @Get('/messages')
+  async getMessageByGroupId(@Query() getMessageByGroupIdInput: GetMessageByGroupIdDto, @Req() req: RequestAuth) {
+    return this.chatService.getMessageByGroupId(getMessageByGroupIdInput, req);
   }
 }
