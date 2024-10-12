@@ -193,6 +193,15 @@ export class ChatService {
     if (isGroup.length === 0) {
       throw new BadRequestException(`You are not user of group${group_id}`);
     }
+    const detailGroup = await this.groupRepository
+      .createQueryBuilder('group')
+      .where('group.id = :group_id', { group_id })
+      .select('group')
+      .addSelect('user')
+      .innerJoin('group.members', 'member')
+      .innerJoin('member.user', 'user')
+      .andWhere('member.user_id !=:user_id', { user_id: req.user.sub })
+      .getRawMany();
 
     const messages = await this.messageRepository
       .createQueryBuilder('message')
@@ -203,7 +212,7 @@ export class ChatService {
       .limit(limit)
       .getMany();
     return ReturnCommon({
-      data: messages,
+      data: { messages, detailGroup },
       message: 'Get message success',
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
