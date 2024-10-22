@@ -218,4 +218,14 @@ export class ChatService {
       status: EResponse.SUCCESS,
     });
   }
+  async test() {
+    const abc = await this.messageRepository
+      .createQueryBuilder('message')
+      .select('message.text', 'text')
+      .addSelect('COUNT(message.id)')
+      .groupBy('message.text')
+      .getMany();
+
+    return abc;
+  }
 }

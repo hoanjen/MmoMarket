@@ -44,6 +44,7 @@ export class AuthService {
       data: {
         access_token,
         refresh_token,
+        user_id: user.id,
       },
       message: 'Signin successfully !',
     });
