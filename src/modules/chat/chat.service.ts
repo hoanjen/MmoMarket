@@ -186,13 +186,9 @@ export class ChatService {
       [user.sub, group_sort_ids],
     );
 
-    groupSideBar = messageSideBar.map((item) =>
-      groupSideBar.map((item2) => {
-        if (item.group_id === item2.group_id) {
-          return item2;
-        }
-      }),
-    );
+    groupSideBar = messageSideBar.map((item) => {
+      return groupSideBar.find((item2) => item.group_id === item2.group_id);
+    });
     return ReturnCommon({
       data: { groupSideBar, messageSideBar },
       message: 'Get SideBar success',
