@@ -45,6 +45,9 @@ export class User {
   last_name: string;
 
   @Column({ nullable: true })
+  full_name: string;
+
+  @Column({ nullable: true })
   middle_name: string;
 
   @Column({ nullable: false, unique: true })

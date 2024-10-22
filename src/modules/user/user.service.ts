@@ -79,9 +79,10 @@ export class UserService {
     } = createUserInput;
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.email = :email OR user.phone_number = :phone_number', {
+      .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
         email,
         phone_number,
+        username,
       })
       .getOne();
 
@@ -153,7 +154,7 @@ export class UserService {
     } = createUserInput;
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.email = :email OR user.phone_number = :phone_number', {
+      .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
         email,
         phone_number,
       })
