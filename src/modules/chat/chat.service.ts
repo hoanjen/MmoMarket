@@ -131,6 +131,7 @@ export class ChatService {
       SELECT 
         g.id AS group_id,
         g.group_name AS group_name,
+        g.group_type AS group_type,
         m.*,
         u.first_name,
         u.last_name,
@@ -157,20 +158,43 @@ export class ChatService {
       `,
       [group_ids, isCursor, limit],
     );
+    const group_sort_ids = messageSideBar.map((item, index) => {
+      return item.group_id;
+    });
 
-    // const messageSideBar = await this.groupRepository
-    //   .createQueryBuilder('group')
-    //   .where('group.id IN (:...group_ids)', { group_ids })
-    //   .innerJoin('group.messages', 'message')
-    //   .select('group.id', 'group_id')
-    //   .addSelect('group', 'group')
-    //   .addSelect('MAX(message.created_at)', 'max_created')
-    //   .groupBy('group.id')
-    //   .orderBy('max_created', 'DESC')
-    //   .getRawMany();
+    let groupSideBar = await this.groupRepository.query(
+      `SELECT 
+        g.id AS group_id,
+        g.group_name,
+        g.group_type AS group_type,
+        g.group_avatar AS avatar,
+      CASE
+        WHEN g.group_type = 'GROUP' THEN g.group_name
+        ELSE u.full_name
+      END AS group_name,
+      CASE
+        WHEN g.group_type = 'GROUP' THEN g.group_avatar
+        ELSE u.avatar
+      END AS avatar
+      FROM
+        groups g
+      INNER JOIN 
+        members m ON m.group_id = g.id
+      INNER JOIN
+        users u ON u.id = m.user_id
+      WHERE m.user_id != ($1) AND g.id = ANY ($2)`,
+      [user.sub, group_sort_ids],
+    );
 
+    groupSideBar = messageSideBar.map((item) =>
+      groupSideBar.map((item2) => {
+        if (item.group_id === item2.group_id) {
+          return item2;
+        }
+      }),
+    );
     return ReturnCommon({
-      data: messageSideBar,
+      data: { groupSideBar, messageSideBar },
       message: 'Get SideBar success',
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
@@ -208,7 +232,7 @@ export class ChatService {
       .where('message.group_id = :group_id', { group_id })
       .andWhere('message.created_at < :isCursor', { isCursor })
       .innerJoinAndSelect('message.user', 'user')
-      .orderBy('message.created_at', 'DESC')
+      .orderBy('message.created_at', 'ASC')
       .limit(limit)
       .getMany();
     return ReturnCommon({
