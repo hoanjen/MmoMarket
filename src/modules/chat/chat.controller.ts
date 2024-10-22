@@ -4,6 +4,7 @@ import { CreateMessageDto, JoinSingleChatDto } from './dtos/create-message.dto';
 import { RequestAuth } from 'src/common/interface.common';
 import { ChatService } from './chat.service';
 import { GetMessageByGroupIdDto, GetSideBarChatQueryDto } from './dtos/get-message.dto';
+import { IsPublic } from 'src/common/decorators/decorator.common';
 
 @ApiTags('Chat')
 @Controller('chat')
@@ -35,5 +36,13 @@ export class ChatController {
   @Get('/messages')
   async getMessageByGroupId(@Query() getMessageByGroupIdInput: GetMessageByGroupIdDto, @Req() req: RequestAuth) {
     return this.chatService.getMessageByGroupId(getMessageByGroupIdInput, req);
+  }
+
+  @ApiOperation({ summary: 'test' })
+  @IsPublic()
+  @Get('/testt')
+  async c() {
+    console.log(1111);
+    return this.chatService.test();
   }
 }

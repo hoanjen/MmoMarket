@@ -33,7 +33,7 @@ export class UserController {
   }
 
   @IsPublic()
-  @Get('/:id')
+  @Get('/get-by')
   @ApiOperation({ summary: 'Find user by id' })
   async findUserById(@Query() findUserByIdInput: FindUserByIdDto) {
     return await this.userService.findUserById(findUserByIdInput);
