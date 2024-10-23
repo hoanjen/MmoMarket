@@ -71,7 +71,7 @@ export class ProductService {
   async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
     const { category_type_ids, keyword, limit, page, sortBy } = getProductByQueryInput;
     const categoryType = await this.categoryTypeService.getCategoryTypeByOption(null, category_type_ids);
-    if (category_type_ids.length !== categoryType.length) {
+    if (category_type_ids && category_type_ids.length !== categoryType.length) {
       throw new BadRequestException('category_type_ids invalid');
     }
     const vlimit = limit ? limit : 100;

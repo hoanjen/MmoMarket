@@ -158,7 +158,7 @@ export class ChatService {
       `,
       [group_ids, isCursor, limit],
     );
-    const group_sort_ids = messageSideBar.map((item, index) => {
+    const group_sort_ids = messageSideBar.map((item) => {
       return item.group_id;
     });
 

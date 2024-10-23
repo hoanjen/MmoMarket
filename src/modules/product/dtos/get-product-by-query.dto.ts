@@ -20,6 +20,7 @@ export class GetProductByQueryDto {
   })
   @IsArray()
   @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   readonly category_type_ids?: Array<string>;
 
   @ApiProperty({
