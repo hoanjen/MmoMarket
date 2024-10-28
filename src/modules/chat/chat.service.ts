@@ -228,7 +228,7 @@ export class ChatService {
       .where('message.group_id = :group_id', { group_id })
       .andWhere('message.created_at < :isCursor', { isCursor })
       .innerJoinAndSelect('message.user', 'user')
-      .orderBy('message.created_at', 'ASC')
+      .orderBy('message.created_at', 'DESC')
       .limit(limit)
       .getMany();
     return ReturnCommon({
