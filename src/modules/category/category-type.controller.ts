@@ -27,7 +27,7 @@ export class CategoryTypeController {
   }
 
   @IsPublic()
-  @Get('/:category_type_id')
+  @Get()
   @ApiOperation({ summary: 'Get Product Of CategoryType' })
   async projectOfCategoryType(@Param() getProductOfCategoryTypeInput: GetProductOfCategoryTypeDto) {
     return this.categoryTypeService.getProductOfCategoryType(getProductOfCategoryTypeInput);

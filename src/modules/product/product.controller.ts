@@ -42,14 +42,14 @@ export class ProductController {
 
   @IsPublic()
   @ApiOperation({ summary: 'Get Product By Query' })
-  @Get('/queryProduct')
+  @Get('/query-product')
   async getProduct(@Query() getProductInput: GetProductByQueryDto) {
     return this.productService.getProductByQuery(getProductInput);
   }
 
   @IsPublic()
   @ApiOperation({ summary: 'Get CategoryType By Query' })
-  @Get('/queryCategotyType')
+  @Get('/query-category-type')
   async getVansProduct(@Query() getCategoryTypeInput: GetCategoryTypeDto) {
     return this.productService.getCategoryTypeByQuery(getCategoryTypeInput);
   }

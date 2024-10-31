@@ -17,9 +17,11 @@ import { CommentModule } from './modules/comment/comment.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       load: [appConfig],

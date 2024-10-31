@@ -51,6 +51,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
+      console.log('11111111111111111');
       const token = Array.isArray(client.handshake.query.token)
         ? client.handshake.query.token[0]
         : client.handshake.query.token;
@@ -64,7 +65,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
       await this.gatewayService.setSocketId(user.payload.sub, client.id);
       console.log('User connected:', user.payload.sub);
     } catch (error) {
-      client.emit('exception', error);
+      console.log(error);
       client.disconnect();
     }
   }
@@ -82,10 +83,11 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
         secret: this.configService.get<string>('jwt.jwtSecret'),
       });
 
-      console.log('User disconnected:', client.id);
+      console.log('User disconnected:', user.payload.sub);
       await this.gatewayService.delSocketId(user.payload.sub);
       client.disconnect();
     } catch (error) {
+      client.disconnect();
       client.emit('exception', error);
     }
   }

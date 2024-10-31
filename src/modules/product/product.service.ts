@@ -70,6 +70,7 @@ export class ProductService {
 
   async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
     const { category_type_ids, keyword, limit, page, sortBy } = getProductByQueryInput;
+
     const categoryType = await this.categoryTypeService.getCategoryTypeByOption(null, category_type_ids);
     if (category_type_ids && category_type_ids.length !== categoryType.length) {
       throw new BadRequestException('category_type_ids invalid');
@@ -80,8 +81,11 @@ export class ProductService {
 
     let productsQuery = this.productRepository
       .createQueryBuilder(PRODUCT_MODEL)
-      .where('category_type_id IN (:...ids)', { ids: category_type_ids })
       .leftJoinAndSelect('products.vans_products', 'vans_product');
+
+    if (category_type_ids) {
+      productsQuery = productsQuery.where('category_type_id IN (:...ids)', { ids: category_type_ids });
+    }
 
     if (keyword) {
       productsQuery = productsQuery.andWhere('LOWER(products.title) LIKE LOWER(:keyword)', {
@@ -97,7 +101,6 @@ export class ProductService {
     if (sortBy === SortBy.DESC) {
       productsQuery = productsQuery.orderBy('products.maxPrice', 'DESC');
     }
-
     const [products, total] = await productsQuery.take(vlimit).skip(skip).getManyAndCount();
 
     const totalPages = Math.ceil(total / vlimit);
