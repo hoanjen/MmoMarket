@@ -39,6 +39,6 @@ import { GatewayModule } from '../gateway/gateway.module';
       useClass: RoleGuard,
     },
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

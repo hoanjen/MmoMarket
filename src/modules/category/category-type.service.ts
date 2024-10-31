@@ -23,6 +23,7 @@ export class CategoryTypeService {
   ) {}
 
   async getCategoryTypeByOption(category_id?: string, category_type_ids?: string[]) {
+    let categoryType;
     try {
       let query = this.categoryTypeRepository.createQueryBuilder(CATEGORY_TYPE_MODEL);
       if (category_id) {
@@ -34,7 +35,7 @@ export class CategoryTypeService {
           ids: [...category_type_ids],
         });
       }
-      var categoryType = await query.getMany();
+      categoryType = await query.getMany();
     } catch (error) {
       throw new BadRequestException('category_type_ids invalid');
     }
