@@ -107,7 +107,18 @@ export class ChatService {
     });
 
     const messages = await this.messageRepository.save(newMessage);
-    await this.gateway.onMessageToUsers(user_ids, { file, file_name, text, sender_id: req.user.sub, group_id, user });
+    await this.gateway.onMessageToUsers(user_ids, {
+      file,
+      file_name,
+      text,
+      user_id: req.user.sub,
+      id: newMessage.id,
+      member_id: 'member_id',
+      created_at: newMessage.created_at.toISOString(),
+      updated_at: newMessage.updated_at.toISOString(),
+      group_id,
+      user,
+    });
     return ReturnCommon({
       data: messages,
       message: 'Chat success',
