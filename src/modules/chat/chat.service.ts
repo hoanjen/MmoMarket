@@ -96,6 +96,7 @@ export class ChatService {
     if (!member) {
       throw new BadRequestException(`You are not member of ${group_id} group`);
     }
+    const user = await this.userService.findUserByIdInternal(req.user.sub);
     const newMessage = this.messageRepository.create({
       group_id,
       file,
@@ -104,8 +105,9 @@ export class ChatService {
       user_id: req.user.sub,
       text,
     });
+
     const messages = await this.messageRepository.save(newMessage);
-    await this.gateway.onMessageToUsers(user_ids, { file, file_name, text, sender_id: req.user.sub, group_id });
+    await this.gateway.onMessageToUsers(user_ids, { file, file_name, text, sender_id: req.user.sub, group_id, user });
     return ReturnCommon({
       data: messages,
       message: 'Chat success',

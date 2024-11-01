@@ -32,14 +32,8 @@ export class GatewayService {
       pipeline.sMembers(`user:${user_id}:socket_ids`);
     });
 
-    const results = await pipeline.exec();
-
-    const allSocketIds: string[] = [];
-    results.forEach((result) => {
-      if (result[1]) {
-        allSocketIds.push(...result[1]);
-      }
-    });
+    const results: any[] = await pipeline.exec();
+    const allSocketIds: string[] = [...results[0]];
 
     return allSocketIds;
   }
