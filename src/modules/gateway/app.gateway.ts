@@ -62,7 +62,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
       const user = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('jwt.jwtSecret'),
       });
-      await this.gatewayService.setSocketId(user.payload.sub, client.id);
+      await this.gatewayService.addSocketId(user.payload.sub, client.id);
       console.log('User connected:', user.payload.sub);
     } catch (error) {
       console.log(error);
@@ -84,7 +84,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
       });
 
       console.log('User disconnected:', user.payload.sub);
-      await this.gatewayService.delSocketId(user.payload.sub);
+      await this.gatewayService.removeSocketId(user.payload.sub, client.id);
       client.disconnect();
     } catch (error) {
       client.disconnect();
@@ -107,12 +107,12 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
   }
 
   async onMessageUserToUsers(sender_id: string, receiver_id: string) {
-    const receiver_socket_id = await this.gatewayService.getSocketId(receiver_id);
+    const receiver_socket_id = await this.gatewayService.getSocketIds(receiver_id);
     this.server.to(receiver_socket_id).emit('abc', { sender_id, message: 'abc' });
   }
 
   async onMessageToUsers(receiver_ids: string[], data: DataChat) {
-    const receiver_socket_ids = await this.gatewayService.getSocketIds(receiver_ids);
+    const receiver_socket_ids = await this.gatewayService.getAllSocketIds(receiver_ids);
     receiver_socket_ids.forEach((receiver_socket_id) => {
       this.server.to(receiver_socket_id).emit('message', { data });
     });
