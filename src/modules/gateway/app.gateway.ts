@@ -15,7 +15,7 @@ import { WsException } from '@nestjs/websockets';
 import { WsExceptionFilter } from 'src/common/exceptions/exceptionsFilterWs';
 import { WsAuthGuard } from './ws.guard';
 import { GatewayService } from './gateway.service';
-import { DataChat } from './interface/user-connect.interface';
+import { IDataChat } from './interface/user-connect.interface';
 
 declare module 'socket.io' {
   interface Socket {
@@ -111,7 +111,7 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
     this.server.to(receiver_socket_id).emit('abc', { sender_id, message: 'abc' });
   }
 
-  async onMessageToUsers(receiver_ids: string[], data: DataChat) {
+  async onMessageToUsers(receiver_ids: string[], data: IDataChat) {
     const receiver_socket_ids = await this.gatewayService.getAllSocketIds(receiver_ids);
     receiver_socket_ids.forEach((receiver_socket_id) => {
       this.server.to(receiver_socket_id).emit('message', { data });

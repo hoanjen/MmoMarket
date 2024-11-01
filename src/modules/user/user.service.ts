@@ -27,6 +27,13 @@ export class UserService {
     private readonly dataSource: DataSource,
   ) {}
 
+  async findUserByIdInternal(user_id: string) {
+    const res = await this.userRepository.findOne({
+      where: { id: user_id },
+    });
+    return res;
+  }
+
   async findUserById(findUserByIdInput: FindUserByIdDto) {
     const res = await this.userRepository.findOne({
       where: { id: findUserByIdInput.user_id },
