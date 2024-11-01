@@ -7,10 +7,14 @@ export interface AuthenticatedSocket extends Socket {
 }
 
 export interface IDataChat {
+  readonly id: string;
+  readonly member_id: string;
   readonly group_id: string;
-  readonly sender_id: string;
+  readonly user_id: string;
   readonly text: string;
   readonly file_name: string;
   readonly file: string;
   readonly user: User;
+  readonly created_at: string;
+  readonly updated_at: string;
 }
