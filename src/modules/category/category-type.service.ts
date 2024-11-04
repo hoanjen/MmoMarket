@@ -10,7 +10,7 @@ import { CreateCategoryTypeDto } from './dtos/create-categorytype.dto';
 import { GetProductOfCategoryTypeDto } from './dtos/get-product-of-categorytype.dto';
 import { Product } from '../product/entity/product.entity';
 import { VansProduct } from '../product/entity/vans-product.entity';
-import { GetCategoryTypeDto } from './dtos/get-categoryType.dto';
+import { GetCategoryTypeDto, GetQueryCategoryTypeDto } from './dtos/get-categoryType.dto';
 
 @Injectable()
 export class CategoryTypeService {
@@ -125,6 +125,24 @@ export class CategoryTypeService {
         categoryType,
         totalProduct: count,
       },
+    });
+  }
+
+  async getCategoryTypeByQuery(getQueryCategoryTypeInput: GetQueryCategoryTypeDto) {
+    const { category_id, category_type_ids } = getQueryCategoryTypeInput;
+    let listCategoryType = [];
+    if (!category_type_ids?.length) {
+      listCategoryType = await this.getCategoryTypeByOption(category_id);
+    } else {
+      listCategoryType = await this.getCategoryTypeByOption(null, category_type_ids);
+    }
+    return ReturnCommon({
+      message: 'Get categorytype success',
+      data: {
+        listCategoryType,
+      },
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
     });
   }
 }

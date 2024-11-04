@@ -13,7 +13,7 @@ export class CreateMessageDto {
     example: 5,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   readonly text: string;
 
   @ApiProperty({

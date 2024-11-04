@@ -37,12 +37,4 @@ export class ChatController {
   async getMessageByGroupId(@Query() getMessageByGroupIdInput: GetMessageByGroupIdDto, @Req() req: RequestAuth) {
     return this.chatService.getMessageByGroupId(getMessageByGroupIdInput, req);
   }
-
-  @ApiOperation({ summary: 'test' })
-  @IsPublic()
-  @Get('/testt')
-  async c() {
-    console.log(1111);
-    return this.chatService.test();
-  }
 }
