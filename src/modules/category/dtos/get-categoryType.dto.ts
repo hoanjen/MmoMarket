@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -19,4 +20,22 @@ export class GetCategoryTypeDto {
   @IsUUID()
   @IsNotEmpty()
   readonly category_id: string;
+}
+
+export class GetQueryCategoryTypeDto {
+  @ApiProperty({
+    example: 'Id of category',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  readonly category_id: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
+  readonly category_type_ids?: Array<string>;
 }

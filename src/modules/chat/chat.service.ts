@@ -79,6 +79,9 @@ export class ChatService {
 
   async chat(createMessageInput: CreateMessageDto, req: RequestAuth) {
     const { file, file_name, group_id, text } = createMessageInput;
+    if (!file && !text) {
+      throw new BadRequestException('Chat should notbe empty');
+    }
     const checkGroup = await this.groupRepository
       .createQueryBuilder('group')
       .where('group.id = :group_id', { group_id })

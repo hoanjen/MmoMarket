@@ -50,24 +50,6 @@ export class ProductService {
     });
   }
 
-  async getCategoryTypeByQuery(getCategoryTypeInput: GetCategoryTypeDto) {
-    const { category_id, category_type_ids } = getCategoryTypeInput;
-    let listCategoryType = [];
-    if (!category_type_ids?.length) {
-      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(category_id);
-    } else {
-      listCategoryType = await this.categoryTypeService.getCategoryTypeByOption(null, category_type_ids);
-    }
-    return ReturnCommon({
-      message: 'Get categorytype success',
-      data: {
-        listCategoryType,
-      },
-      statusCode: HttpStatus.OK,
-      status: EResponse.SUCCESS,
-    });
-  }
-
   async getProductByQuery(getProductByQueryInput: GetProductByQueryDto) {
     const { category_type_ids, keyword, limit, page, sortBy } = getProductByQueryInput;
 
@@ -108,7 +90,7 @@ export class ProductService {
     const previousPage = vpage > 1 ? vpage - 1 : null;
     return ReturnCommon({
       message: 'success',
-      data: { products, previousPage, totalPages, nextPage },
+      data: { products, previousPage, totalPages, nextPage, currentPage: vpage },
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
     });
