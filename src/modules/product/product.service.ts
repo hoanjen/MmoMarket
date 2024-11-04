@@ -83,6 +83,7 @@ export class ProductService {
     if (sortBy === SortBy.DESC) {
       productsQuery = productsQuery.orderBy('products.maxPrice', 'DESC');
     }
+    productsQuery.innerJoinAndSelect('products.user', 'user');
     const [products, total] = await productsQuery.take(vlimit).skip(skip).getManyAndCount();
 
     const totalPages = Math.ceil(total / vlimit);
@@ -90,7 +91,7 @@ export class ProductService {
     const previousPage = vpage > 1 ? vpage - 1 : null;
     return ReturnCommon({
       message: 'success',
-      data: { products, previousPage, totalPages, nextPage, currentPage: vpage },
+      data: { products, previousPage, totalPages, nextPage, currentPage: vpage, totalDocs: total },
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
     });
