@@ -42,7 +42,7 @@ export class ProductController {
 
   @IsPublic()
   @ApiOperation({ summary: 'Get Product By Query' })
-  @Get('/query-roduct')
+  @Get('/query-product')
   async getProduct(@Query() getProductInput: GetProductByQueryDto) {
     return this.productService.getProductByQuery(getProductInput);
   }
