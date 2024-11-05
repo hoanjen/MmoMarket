@@ -84,6 +84,7 @@ export class ProductService {
       productsQuery = productsQuery.orderBy('products.maxPrice', 'DESC');
     }
     productsQuery.innerJoinAndSelect('products.user', 'user');
+    productsQuery.innerJoinAndSelect('products.category_type', 'category_type');
     const [products, total] = await productsQuery.take(vlimit).skip(skip).getManyAndCount();
 
     const totalPages = Math.ceil(total / vlimit);
