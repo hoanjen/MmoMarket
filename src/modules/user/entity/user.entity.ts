@@ -47,9 +47,6 @@ export class User {
   @Column({ nullable: true })
   full_name: string;
 
-  @Column({ nullable: true })
-  middle_name: string;
-
   @Column({ nullable: false, unique: true })
   username: string;
 
@@ -81,7 +78,7 @@ export class User {
   balance: Balance;
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)
-  transactions: Balance[];
+  transactions: Transaction[];
 
   @OneToMany(() => Role, (role) => role.user) // specify inverse side as a second parameter
   roles: Role[];

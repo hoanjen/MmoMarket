@@ -7,6 +7,7 @@ import { ProductService } from '../product/product.service';
 import { OrderService } from '../order/order.service';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
+import { GetCommentDto } from './dtos/get-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -44,9 +45,24 @@ export class CommentService {
       message: 'Comment success',
       statusCode: HttpStatus.CREATED,
       status: EResponse.SUCCESS,
-      data: {
-        comment,
-      },
+      data: comment,
+    });
+  }
+
+  async getCommentByProductId(getCommentInput: GetCommentDto) {
+    const { product_id } = getCommentInput;
+    const comment = await this.commentRepository
+      .createQueryBuilder('comment')
+      .where('comment.product_id = :product_id', { product_id })
+      .innerJoin('comment.user', 'user')
+      .select('comment')
+      .addSelect(['user.id', 'user.full_name', 'user.avatar'])
+      .getMany();
+    return ReturnCommon({
+      message: 'Get comment success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: comment,
     });
   }
 }

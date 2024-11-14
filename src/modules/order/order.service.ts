@@ -8,6 +8,8 @@ import { VansProductService } from '../product/vans-product.service';
 import { DataProductOrder } from './entity/data-product-order.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
+import { ProductService } from '../product/product.service';
+import { Console } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -21,6 +23,7 @@ export class OrderService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly vansProductService: VansProductService,
+    private readonly productService: ProductService,
   ) {}
 
   async createOrder(req: any, buyVansProductInput: BuyVansProductDto) {
@@ -49,7 +52,8 @@ export class OrderService {
       await queryRunner.startTransaction();
 
       const data_products = await this.vansProductService.getDataProduct({ vans_product_id, quantity }, queryRunner);
-
+      await this.vansProductService.updateVansProductQuantity(vans_product_id, quantity, queryRunner);
+      await this.productService.updateProductQuantitySold(queryRunner, quantity, checkVansProduct.product.id);
       const newOrder = this.orderRepository.create({
         vans_product_id,
         user_id: req.user.sub,

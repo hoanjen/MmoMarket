@@ -1,5 +1,4 @@
 import { BadRequestException, HttpStatus, Inject, Injectable, forwardRef } from '@nestjs/common';
-import { GetProductDto } from './dtos/get-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { PRODUCT_MODEL, Product } from './entity/product.entity';
@@ -13,6 +12,7 @@ import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-categor
 import { GetCategoryTypeDto, GetProductByQueryDto } from './dtos/get-product-by-query.dto';
 import { CategoryTypeService } from '../category/category-type.service';
 import { SortBy } from './product.constant';
+import { GetProductDetailDto } from './dtos/get-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -26,6 +26,14 @@ export class ProductService {
 
   async getProduct() {
     return await this.productRepository.find();
+  }
+  async getProductDetail(getProductDetailInput: GetProductDetailDto) {
+    const { product_id } = getProductDetailInput;
+    const product_detail = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.id = :product_id', { product_id })
+      .getMany();
+    return true;
   }
 
   async createProduct(user_id: string, createProductInput: CreateProductDto) {

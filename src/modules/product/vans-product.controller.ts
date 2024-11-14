@@ -37,8 +37,7 @@ export class VansProductController {
   async vansProduct(@Body() createVansProductInput: CreateVansProductDto, @Req() req: any) {
     return this.vansProductService.createVansProduct(createVansProductInput, req.user.sub);
   }
-
-  @Roles(Role.User, Role.User)
+  @Roles(Role.User, Role.Admin)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Data-Product' })
   @Post('/data-product')

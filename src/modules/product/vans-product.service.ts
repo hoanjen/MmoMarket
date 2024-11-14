@@ -27,7 +27,11 @@ export class VansProductService {
   ) {}
 
   async getVansProduct(vans_product_id: string) {
-    return await this.vansProductRepository.findOneBy({ id: vans_product_id });
+    return await this.vansProductRepository
+      .createQueryBuilder('vans_product')
+      .where('vans_product.id =:vans_product_id', { vans_product_id })
+      .innerJoinAndSelect('vans_product.product', 'product')
+      .getOne();
   }
 
   async createVansProduct(createVansProductInput: CreateVansProductDto, user_id: string) {
@@ -48,12 +52,11 @@ export class VansProductService {
       isProduct.minPrice = price;
       await this.productRepository.save(isProduct);
     }
-    const quantity = 0;
     const newVansProduct = this.vansProductRepository.create({
       title,
       description,
       price,
-      quantity,
+      quantity: 0,
       product_id,
     });
 
@@ -123,10 +126,6 @@ export class VansProductService {
       take: quantity,
     });
 
-    await queryRunner.manager.update(VansProduct, vansProduct, {
-      quantity: vansProduct.quantity - quantity,
-    });
-    await this.productService.updateProductQuantitySold(queryRunner, quantity, vansProduct.product_id);
     await queryRunner.manager.update(DataProduct, dataProducts, {
       status: StatusProductSale.SOLD,
     });
@@ -167,7 +166,6 @@ export class VansProductService {
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     let rowDuplicate = [];
     const dataProductNews = [];
-    console.log(data);
     data.forEach((item: Array<any>, index) => {
       if (item[0] === undefined || item[1] === undefined) {
         rowDuplicate.push(index);
@@ -209,5 +207,10 @@ export class VansProductService {
         dataProductNews,
       },
     });
+  }
+
+  async updateVansProductQuantity(id: string, quantity: number, queryRunner: QueryRunner) {
+    await queryRunner.manager.update(VansProduct, id, { quantity: () => `quantity - ${quantity}` });
+    // or  await queryRunner.manager.query(`UPDATE vans_products SET quantity = quantity - $1 WHERE id = $2`, [quantity, id]);
   }
 }
