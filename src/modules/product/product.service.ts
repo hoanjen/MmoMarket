@@ -32,8 +32,15 @@ export class ProductService {
     const product_detail = await this.productRepository
       .createQueryBuilder('product')
       .where('product.id = :product_id', { product_id })
-      .getMany();
-    return true;
+      .innerJoinAndSelect('product.vans_products', 'vans_product')
+      .getOne();
+
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      message: 'get product success !',
+      data: product_detail,
+    });
   }
 
   async createProduct(user_id: string, createProductInput: CreateProductDto) {
