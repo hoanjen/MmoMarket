@@ -34,7 +34,7 @@ export class ProductController {
 
   @IsPublic()
   @ApiOperation({ summary: 'Get Product Detail' })
-  @Get()
+  @Get('/product-detail')
   async productDetail(@Query() getProductDetailInput: GetProductDetailDto) {
     return this.productService.getProductDetail(getProductDetailInput);
   }
