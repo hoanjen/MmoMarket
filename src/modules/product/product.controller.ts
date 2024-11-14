@@ -14,7 +14,7 @@ import {
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { ProductService } from './product.service';
-import { GetProductDto } from './dtos/get-product.dto';
+import { GetProductDetailDto } from './dtos/get-product.dto';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { GetProductOfCategoryTypeDto } from '../category/dtos/get-product-of-categorytype.dto';
 import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
@@ -30,6 +30,13 @@ export class ProductController {
   @Get()
   async product() {
     return this.productService.getProduct();
+  }
+
+  @IsPublic()
+  @ApiOperation({ summary: 'Get Product Detail' })
+  @Get()
+  async productDetail(@Query() getProductDetailInput: GetProductDetailDto) {
+    return this.productService.getProductDetail(getProductDetailInput);
   }
 
   @ApiOperation({ summary: 'Create Product' })

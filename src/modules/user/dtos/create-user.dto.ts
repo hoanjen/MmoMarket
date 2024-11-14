@@ -40,15 +40,6 @@ export class CreateUserDto {
   readonly last_name: string;
 
   @ApiProperty({
-    example: 'middle name',
-  })
-  @IsString()
-  @IsOptional()
-  @MaxLength(20)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  readonly middle_name?: string;
-
-  @ApiProperty({
     example: 'username',
   })
   @IsString()

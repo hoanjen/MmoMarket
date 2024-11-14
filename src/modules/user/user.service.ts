@@ -3,7 +3,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { Password } from './entity/password.entity';
 import { ROLE_MODEL, Role } from './entity/role.entity';
-import { Repository, Transaction } from 'typeorm';
+import { QueryFailedError, Repository, Transaction } from 'typeorm';
 
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -71,19 +71,8 @@ export class UserService {
   }
 
   async createUser(createUserInput: CreateUserDto) {
-    const {
-      email,
-      password,
-      first_name,
-      last_name,
-      middle_name,
-      gender,
-      phone_number,
-      username,
-      cover_image,
-      avatar,
-      dob,
-    } = createUserInput;
+    const { email, password, first_name, last_name, gender, phone_number, username, cover_image, avatar, dob } =
+      createUserInput;
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
       .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
@@ -110,12 +99,19 @@ export class UserService {
         gender,
         last_name,
         username,
-        middle_name,
         phone_number,
         google_id: '123',
         dob,
       });
-      const user = await queryRunner.manager.save(newUser);
+      let user;
+      try {
+        user = await queryRunner.manager.save(newUser);
+      } catch (error) {
+        if (error instanceof QueryFailedError && error.driverError.code === '23505') {
+          //UNIQUE ERROR
+          throw new BadRequestException('username is exist');
+        }
+      }
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({
@@ -146,24 +142,15 @@ export class UserService {
   }
 
   async createAdminByAdmin(createUserInput: CreateUserDto) {
-    const {
-      email,
-      password,
-      first_name,
-      last_name,
-      middle_name,
-      gender,
-      phone_number,
-      username,
-      cover_image,
-      avatar,
-      dob,
-    } = createUserInput;
+    const { email, password, first_name, last_name, gender, phone_number, username, cover_image, avatar, dob } =
+      createUserInput;
+
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
       .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
         email,
         phone_number,
+        username,
       })
       .getOne();
 
@@ -184,18 +171,27 @@ export class UserService {
         gender,
         last_name,
         username,
-        middle_name,
         phone_number,
         google_id: '123',
         dob,
       });
-      const user = await queryRunner.manager.save(newUser);
+      let user;
+      try {
+        user = await queryRunner.manager.save(newUser);
+      } catch (error) {
+        if (error instanceof QueryFailedError && error.driverError.code === '23505') {
+          //UNIQUE ERROR
+          throw new BadRequestException('username is exist');
+        }
+      }
+
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({
         user,
         password: hashPassword,
       });
+
       await queryRunner.manager.save(newPassword);
 
       const newRole = this.roleRepository.create({
@@ -209,9 +205,7 @@ export class UserService {
       return ReturnCommon({
         statusCode: HttpStatus.CREATED,
         status: EResponse.SUCCESS,
-        data: {
-          user,
-        },
+        data: user,
         message: 'Create user successfully',
       });
     } catch (error) {
