@@ -4,6 +4,7 @@ import {
   FileTypeValidator,
   Get,
   MaxFileSizeValidator,
+  Param,
   ParseFilePipe,
   ParseIntPipe,
   Post,
@@ -34,8 +35,8 @@ export class ProductController {
 
   @IsPublic()
   @ApiOperation({ summary: 'Get Product Detail' })
-  @Get('/product-detail')
-  async productDetail(@Query() getProductDetailInput: GetProductDetailDto) {
+  @Get(':product_id')
+  async productDetail(@Param() getProductDetailInput: GetProductDetailDto) {
     return this.productService.getProductDetail(getProductDetailInput);
   }
 

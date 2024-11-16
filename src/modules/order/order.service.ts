@@ -4,7 +4,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Discount } from './entity/discount.entity';
 import { DataSource, In, Repository } from 'typeorm';
 import { Order } from './entity/order.entity';
-import { VansProductService } from '../product/vans-product.service';
+import { VansProductService } from '../product/vans-product/vans-product.service';
 import { DataProductOrder } from './entity/data-product-order.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';

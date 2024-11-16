@@ -8,8 +8,8 @@ import { VansProduct } from './entity/vans-product.entity';
 import { Product } from './entity/product.entity';
 import { CategoryModule } from '../category/category.module';
 import { UserModule } from '../user/user.module';
-import { VansProductController } from './vans-product.controller';
-import { VansProductService } from './vans-product.service';
+import { VansProductController } from './vans-product/vans-product.controller';
+import { VansProductService } from './vans-product/vans-product.service';
 import { DataProduct } from './entity/data-product.entity';
 import { OrderModule } from '../order/order.module';
 

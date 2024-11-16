@@ -32,7 +32,7 @@ export class ProductService {
     const product_detail = await this.productRepository
       .createQueryBuilder('product')
       .where('product.id = :product_id', { product_id })
-      .innerJoinAndSelect('product.vans_products', 'vans_product')
+      .leftJoinAndSelect('product.vans_products', 'vans_product')
       .getOne();
 
     return ReturnCommon({
