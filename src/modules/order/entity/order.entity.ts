@@ -32,8 +32,14 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   vans_product_id: string;
+
+  @Column({ nullable: false })
+  quantity: number;
+
+  @Column({ nullable: false })
+  price: number;
 
   @OneToMany(() => DataProductOrder, (dataProductOrder) => dataProductOrder.order)
   data_product_orders: DataProductOrder[];
