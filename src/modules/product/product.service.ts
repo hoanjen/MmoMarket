@@ -119,6 +119,13 @@ export class ProductService {
 
   async updateProductQuantitySold(queryRunner: QueryRunner, quantity: number, product_id: string) {
     await queryRunner.manager
+      .createQueryBuilder(Product, 'products')
+      .setLock('pessimistic_write')
+      .setOnLocked('nowait')
+      .where('products.id = :id', { id: product_id })
+      .getOne();
+
+    await queryRunner.manager
       .createQueryBuilder()
       .update(Product)
       .set({ quantity_sold: () => `quantity_sold + ${quantity}` })
