@@ -37,6 +37,7 @@
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^9.4.3",
+    "@paypal/paypal-js": "^8.1.2",
     "@socket.io/redis-adapter": "^8.3.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
