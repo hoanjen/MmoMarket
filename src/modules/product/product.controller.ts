@@ -33,13 +33,6 @@ export class ProductController {
     return this.productService.getProduct();
   }
 
-  @IsPublic()
-  @ApiOperation({ summary: 'Get Product Detail' })
-  @Get(':product_id')
-  async productDetail(@Param() getProductDetailInput: GetProductDetailDto) {
-    return this.productService.getProductDetail(getProductDetailInput);
-  }
-
   @ApiOperation({ summary: 'Create Product' })
   @Roles(Role.Admin, Role.User)
   @ApiBearerAuth()
@@ -53,5 +46,12 @@ export class ProductController {
   @Get('/query-product')
   async getProduct(@Query() getProductInput: GetProductByQueryDto) {
     return this.productService.getProductByQuery(getProductInput);
+  }
+
+  @IsPublic()
+  @ApiOperation({ summary: 'Get Product Detail' })
+  @Get(':product_id')
+  async productDetail(@Param() getProductDetailInput: GetProductDetailDto) {
+    return this.productService.getProductDetail(getProductDetailInput);
   }
 }
