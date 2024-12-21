@@ -8,3 +8,7 @@ export function ReturnCommon(payload: IResponseCommon): IResponseCommon {
     message: payload.message && typeof payload.message === 'string' ? [payload.message] : payload.message,
   };
 }
+
+export function toFixed(s: number, n: number = 2) {
+  return Number(s.toFixed(n));
+}
