@@ -155,5 +155,30 @@ export class AdminService {
     };
   }
 
-  async getCategoryStats() {}
+  // { label: 'America', value: 3500 },
+  // { label: 'Asia', value: 2500 },
+  // { label: 'Europe', value: 1500 },
+  // { label: 'Africa', value: 500 },
+
+  async getCategoryStats() {
+    const results = await this.categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.category_types', 'categoryType')
+      .select('category.name', 'categoryName')
+      .addSelect('COUNT(categoryType.id)', 'categoryTypeCount')
+      .groupBy('category.id')
+      .getRawMany();
+    if (!results.length) {
+      return {
+        label: 'category',
+        value: 1,
+      };
+    }
+    return results.map((item) => {
+      return {
+        label: item.categoryName,
+        value: Number(item.categoryTypeCount),
+      };
+    });
+  }
 }
