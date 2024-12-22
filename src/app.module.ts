@@ -18,6 +18,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { GatewayModule } from './modules/gateway/gateway.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { JwtModule } from '@nestjs/jwt';
     PaymentModule,
     GatewayModule,
     ChatModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
