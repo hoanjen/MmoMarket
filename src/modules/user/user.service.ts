@@ -217,11 +217,19 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id: req.user.sub },
     });
+    const role = await this.roleRepository.findOne({
+      where: {
+        user_id: user.id,
+      },
+    });
     return ReturnCommon({
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
       data: {
-        user,
+        user: {
+          ...user,
+          role: role.name,
+        },
       },
       message: 'Get user successfully',
     });
