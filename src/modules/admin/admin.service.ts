@@ -2,11 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { GetOverviewDashboardDto } from './dtos/get-overview-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
-import { And, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { And, ILike, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Order } from '../order/entity/order.entity';
-import { toFixed } from 'src/common/utilities/base-response';
+import { pagination, toFixed } from 'src/common/utilities/base-response';
 import { Product } from '../product/entity/product.entity';
 import { Category, CATEGORY_MODEL } from '../category/entity/category.entity';
+import { GetListUserDto } from './dtos/get-list-user.dto';
 
 @Injectable()
 export class AdminService {
@@ -180,5 +181,42 @@ export class AdminService {
         value: Number(item.categoryTypeCount),
       };
     });
+  }
+
+  async getListUser(getListUserInput: GetListUserDto) {
+    const { limit, page, search } = getListUserInput;
+    const user = await this.userRepository.find({
+      where: search
+        ? [
+            {
+              email: ILike(`%${search}%`),
+            },
+            {
+              full_name: ILike(`%${search}%`),
+            },
+          ]
+        : {},
+      relations: {
+        roles: true,
+      },
+    });
+    const totalUser = await this.userRepository.count({
+      where: search
+        ? [
+            {
+              email: ILike(`%${search}%`),
+            },
+            {
+              full_name: ILike(`%${search}%`),
+            },
+          ]
+        : {},
+    });
+
+    const pageDetail = pagination(page, limit, totalUser);
+    return {
+      pageDetail,
+      user,
+    };
   }
 }
