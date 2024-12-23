@@ -8,7 +8,6 @@ import { GetListUserDto } from './dtos/get-list-user.dto';
 @ApiTags('Admin')
 @Roles(Role.Admin)
 @ApiBearerAuth()
-@IsPublic()
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
