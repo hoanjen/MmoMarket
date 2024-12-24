@@ -69,7 +69,7 @@ export class AdminService {
         },
       }),
     ]);
-    const growthProduct = newProduct - previousProduct / previousProduct;
+    const growthProduct = (newProduct - previousProduct) / previousProduct;
 
     return {
       growth: growthProduct ? toFixed(growthProduct * 100) : 0,
@@ -149,7 +149,7 @@ export class AdminService {
     ]);
     const revenue = Number(order[0].sum ?? 0);
     const previousRevenue = Number(previousOrder[0].sum ?? 0);
-    const growthRevenue = revenue - previousRevenue / previousRevenue;
+    const growthRevenue = (revenue - previousRevenue) / previousRevenue;
     return {
       growth: toFixed(growthRevenue ? growthRevenue * 100 : 0),
       total: toFixed(revenue),
