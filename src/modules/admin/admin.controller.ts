@@ -23,6 +23,12 @@ export class AdminController {
     return this.adminService.getCategoryStats();
   }
 
+  @Get('order/revenue')
+  @ApiOperation({ summary: 'Revenue by year' })
+  async getOrderRevenue() {
+    return this.adminService.getOrderRevenue();
+  }
+
   @Get('users')
   @ApiOperation({ summary: 'list user' })
   async getListUser(@Query() getListUserInput: GetListUserDto) {

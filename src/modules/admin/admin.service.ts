@@ -8,6 +8,7 @@ import { pagination, toFixed } from 'src/common/utilities/base-response';
 import { Product } from '../product/entity/product.entity';
 import { Category, CATEGORY_MODEL } from '../category/entity/category.entity';
 import { GetListUserDto } from './dtos/get-list-user.dto';
+import { mapMonth } from './type';
 
 @Injectable()
 export class AdminService {
@@ -218,5 +219,51 @@ export class AdminService {
       pageDetail,
       user,
     };
+  }
+
+  async getOrderRevenue() {
+    const year = new Date().getFullYear();
+
+    const [preRevenue, revenue] = await Promise.all([
+      await this.orderRepository
+        .createQueryBuilder('orders')
+        .select([`SUM(orders.quantity * orders.price) AS revenue`])
+        .where(`EXTRACT(YEAR FROM orders.created_at) = :year`, { year: year - 1 })
+        .getRawOne(),
+      await this.orderRepository
+        .createQueryBuilder('orders')
+        .select([`EXTRACT(MONTH FROM orders.created_at) AS month`, `SUM(orders.quantity * orders.price) AS revenue`])
+        .where(`EXTRACT(YEAR FROM orders.created_at) = :year`, { year })
+        .groupBy(`EXTRACT(MONTH FROM orders.created_at)`)
+        .getRawMany(),
+    ]);
+
+    let sumRevenue = 0;
+    const results = [];
+    const mapRevenue = new Map<string, number>();
+
+    for (const item of revenue) {
+      mapRevenue.set(item.month, item.revenue);
+    }
+
+    mapMonth.forEach((value, key) => {
+      const isExistedMonth = mapRevenue.get(key);
+      sumRevenue += isExistedMonth ?? 0;
+      if (isExistedMonth) {
+        results.push({
+          month: value,
+          revenue: isExistedMonth,
+        });
+      } else {
+        results.push({
+          month: value,
+          revenue: 0,
+        });
+      }
+    });
+
+    const growthRevenue = (sumRevenue - preRevenue) / preRevenue;
+
+    return { growthRevenue: growthRevenue ? toFixed(growthRevenue) : 0, revenue: results };
   }
 }
