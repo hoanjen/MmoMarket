@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { AdminService } from './admin.service';
@@ -33,5 +33,11 @@ export class AdminController {
   @ApiOperation({ summary: 'list user' })
   async getListUser(@Query() getListUserInput: GetListUserDto) {
     return this.adminService.getListUser(getListUserInput);
+  }
+
+  @Patch('users/:id')
+  @ApiOperation({ summary: 'kick user' })
+  async kickUser(@Param('id') id: string) {
+    return this.adminService.kickUser(id);
   }
 }

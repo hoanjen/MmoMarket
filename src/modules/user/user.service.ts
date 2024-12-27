@@ -70,6 +70,14 @@ export class UserService {
     });
   }
 
+  async findRoleByUserId(id: string) {
+    return await this.roleRepository.findOne({
+      where: {
+        user_id: id,
+      },
+    });
+  }
+
   async createUser(createUserInput: CreateUserDto) {
     const { email, password, first_name, last_name, gender, phone_number, username, cover_image, avatar, dob } =
       createUserInput;

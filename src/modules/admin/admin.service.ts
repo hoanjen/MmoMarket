@@ -9,6 +9,8 @@ import { Product } from '../product/entity/product.entity';
 import { Category, CATEGORY_MODEL } from '../category/entity/category.entity';
 import { GetListUserDto } from './dtos/get-list-user.dto';
 import { mapMonth } from './type';
+import { Role } from '../user/entity/role.entity';
+import { USER_ROLE } from '../user/user.constant';
 
 @Injectable()
 export class AdminService {
@@ -21,6 +23,8 @@ export class AdminService {
     private productRepository: Repository<Product>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
   ) {}
 
   async getOverviewDashboard(getOverviewDashboardInput: GetOverviewDashboardDto) {
@@ -186,6 +190,9 @@ export class AdminService {
 
   async getListUser(getListUserInput: GetListUserDto) {
     const { limit, page, search } = getListUserInput;
+    const vLimit = limit && limit > 0 ? limit : 10;
+    const vPage = page && page > 0 ? page : 1;
+    const offset = (vPage - 1) * vLimit;
     const user = await this.userRepository.find({
       where: search
         ? [
@@ -200,6 +207,8 @@ export class AdminService {
       relations: {
         roles: true,
       },
+      skip: offset,
+      take: vLimit,
     });
     const totalUser = await this.userRepository.count({
       where: search
@@ -214,7 +223,7 @@ export class AdminService {
         : {},
     });
 
-    const pageDetail = pagination(page, limit, totalUser);
+    const pageDetail = pagination(vPage, vLimit, totalUser);
     return {
       pageDetail,
       user,
@@ -265,5 +274,29 @@ export class AdminService {
     const growthRevenue = (sumRevenue - preRevenue) / preRevenue;
 
     return { growthRevenue: growthRevenue ? toFixed(growthRevenue) : 0, revenue: results };
+  }
+
+  async kickUser(id: string) {
+    const role = await this.roleRepository.findOne({
+      where: {
+        user_id: id,
+      },
+    });
+
+    if (!role) {
+      throw new BadRequestException('User not found');
+    }
+    if (role.name === USER_ROLE.ADMIN) {
+      throw new BadRequestException('Cannot kick admin');
+    }
+    await this.roleRepository.update(
+      {
+        user_id: id,
+      },
+      {
+        name: role.name === USER_ROLE.KICK ? USER_ROLE.USER : USER_ROLE.KICK,
+      },
+    );
+    return 'Ok';
   }
 }
