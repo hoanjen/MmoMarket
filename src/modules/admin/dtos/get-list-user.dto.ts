@@ -10,8 +10,9 @@ export class GetListUserDto {
   })
   @Type(() => Number)
   @IsNumber()
+  @IsOptional()
   @Min(1)
-  limit: number;
+  limit?: number;
 
   @ApiProperty({
     example: 10,
@@ -21,7 +22,8 @@ export class GetListUserDto {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  page: number;
+  @IsOptional()
+  page?: number;
 
   @ApiProperty({
     example: 'search',

@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
+import { USER_ROLE } from '../user/user.constant';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,10 @@ export class AuthService {
     const user = await this.userService.findUserByEmail(email);
     if (!user) {
       throw new BadRequestException('email or password invalid !');
+    }
+    const role = await this.userService.findRoleOfUserById(user.id);
+    if (role.name === USER_ROLE.KICK) {
+      throw new BadRequestException('User kicked!');
     }
     const hashPassword = await this.userService.getHashPassword(email);
 

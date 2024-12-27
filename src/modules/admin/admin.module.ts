@@ -6,9 +6,10 @@ import { Order } from '../order/entity/order.entity';
 import { User } from '../user/entity/user.entity';
 import { Product } from '../product/entity/product.entity';
 import { Category } from '../category/entity/category.entity';
+import { Role } from '../user/entity/role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, User, Product, Category])],
+  imports: [TypeOrmModule.forFeature([Order, User, Product, Category, Role])],
   controllers: [AdminController],
   providers: [AdminService],
 })
