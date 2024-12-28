@@ -189,10 +189,8 @@ export class AdminService {
   }
 
   async getListUser(getListUserInput: GetListUserDto) {
-    const { limit, page, search } = getListUserInput;
-    const vLimit = limit && limit > 0 ? limit : 10;
-    const vPage = page && page > 0 ? page : 1;
-    const offset = (vPage - 1) * vLimit;
+    const { search } = getListUserInput;
+
     const user = await this.userRepository.find({
       where: search
         ? [
@@ -207,25 +205,9 @@ export class AdminService {
       relations: {
         roles: true,
       },
-      skip: offset,
-      take: vLimit,
-    });
-    const totalUser = await this.userRepository.count({
-      where: search
-        ? [
-            {
-              email: ILike(`%${search}%`),
-            },
-            {
-              full_name: ILike(`%${search}%`),
-            },
-          ]
-        : {},
     });
 
-    const pageDetail = pagination(vPage, vLimit, totalUser);
     return {
-      pageDetail,
       user,
     };
   }
