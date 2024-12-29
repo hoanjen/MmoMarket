@@ -4,6 +4,7 @@ import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { AdminService } from './admin.service';
 import { GetOverviewDashboardDto } from './dtos/get-overview-dashboard.dto';
 import { GetListUserDto } from './dtos/get-list-user.dto';
+import { GetListProductDto } from './dtos/get-list-product.dto';
 
 @ApiTags('Admin')
 @Roles(Role.Admin)
@@ -39,5 +40,16 @@ export class AdminController {
   @ApiOperation({ summary: 'kick user' })
   async kickUser(@Param('id') id: string) {
     return this.adminService.kickUser(id);
+  }
+
+  @Get('products')
+  @ApiOperation({ summary: 'list product' })
+  async getListProduct(@Query() getListProductInput: GetListProductDto) {
+    return this.adminService.getListProduct(getListProductInput);
+  }
+  @Delete('products/:id')
+  @ApiOperation({ summary: 'delete product' })
+  async deleteProduct(@Param('id') id: string) {
+    return this.adminService.deleteProduct(id);
   }
 }

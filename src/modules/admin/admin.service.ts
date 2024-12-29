@@ -11,6 +11,7 @@ import { GetListUserDto } from './dtos/get-list-user.dto';
 import { mapMonth } from './type';
 import { Role } from '../user/entity/role.entity';
 import { USER_ROLE } from '../user/user.constant';
+import { GetListProductDto } from './dtos/get-list-product.dto';
 
 @Injectable()
 export class AdminService {
@@ -205,6 +206,9 @@ export class AdminService {
       relations: {
         roles: true,
       },
+      order: {
+        created_at: 'desc',
+      },
     });
 
     return {
@@ -280,5 +284,46 @@ export class AdminService {
       },
     );
     return 'Ok';
+  }
+
+  async getListProduct(getListProductInput: GetListProductDto) {
+    const { search } = getListProductInput;
+
+    const product = await this.productRepository.find({
+      where: search
+        ? [
+            {
+              title: ILike(`%${search}%`),
+            },
+            {
+              sub_title: ILike(`%${search}%`),
+            },
+          ]
+        : {},
+      relations: {
+        user: true,
+        vans_products: true,
+      },
+      order: {
+        created_at: 'desc',
+      },
+    });
+
+    return {
+      product,
+    };
+  }
+
+  async deleteProduct(id: string) {
+    const product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!product) {
+      throw new BadRequestException('product not found');
+    }
+    await this.productRepository.update({ id }, { deleted: !product.deleted });
+    return 'OK';
   }
 }

@@ -76,6 +76,9 @@ export class Product {
   @OneToMany(() => Comment, (comment) => comment.product)
   comments: Comment[];
 
+  @Column({ type: 'boolean', default: false })
+  deleted: boolean;
+
   @CreateDateColumn()
   created_at: Date; // Creation date
 

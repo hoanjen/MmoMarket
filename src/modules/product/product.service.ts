@@ -84,6 +84,8 @@ export class ProductService {
       productsQuery = productsQuery.where('category_type_id IN (:...ids)', { ids: category_type_ids });
     }
 
+    productsQuery.andWhere('products.deleted = :deleted', { deleted: false });
+
     if (keyword) {
       productsQuery = productsQuery.andWhere('LOWER(products.title) LIKE LOWER(:keyword)', {
         keyword: `%${keyword}%`,
