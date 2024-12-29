@@ -13,6 +13,7 @@ import { USER_ROLE } from './user.constant';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUserByIdDto } from './dtos/find-user-by-id.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { Balance } from '../payment/entity/balance.entity';
 
 @Injectable()
 export class UserService {
@@ -120,6 +121,12 @@ export class UserService {
           throw new BadRequestException('username is exist');
         }
       }
+      const balance = queryRunner.manager.create(Balance, {
+        account_balance: 0,
+        user_id: user.id,
+      });
+      await queryRunner.manager.save(balance);
+
       const salt = bcrypt.genSaltSync(10);
       const hashPassword = bcrypt.hashSync(password, salt);
       const newPassword = this.passwordRepository.create({

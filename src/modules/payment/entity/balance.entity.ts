@@ -21,7 +21,7 @@ export class Balance {
   id: string;
 
   @Column({ nullable: false })
-  account_balance: string;
+  account_balance: number;
 
   @Column({ nullable: false })
   user_id: string;
