@@ -10,7 +10,7 @@ import {
   Column,
   ManyToOne,
 } from 'typeorm';
-import { PayMent } from '../payment.constants';
+import { PayMent, PayMentStatus } from '../payment.constants';
 
 export const TRANSACTION_MODEL = 'transactions';
 
@@ -26,6 +26,10 @@ export class Transaction {
 
   @Column({ nullable: false })
   amount: number;
+
+  @Column({ type: 'enum', enum: PayMentStatus })
+  @IsEnum(PayMentStatus)
+  status: string;
 
   @Column({ nullable: false })
   user_id: string;

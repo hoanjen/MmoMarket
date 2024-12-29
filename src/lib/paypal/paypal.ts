@@ -1,37 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { CreateOrderRequestBody, OrderResponseBody } from '@paypal/paypal-js';
 
-const CLIENT_ID = 'AdLw3OKJsdNjokAp5ddMCfCEnz9nxpTKOI5jpKYsaxdO1hpvedFdcmO-SaL-04-Mbz7oPlDRUVfwu_sK';
-const APP_SECRET = 'EKxmvjMkfUUNv2MVyGA4-9JVDIX0rFMLeF8vWurI6eefqjFIUcT3NjXxms1gWygKmckLWoWbtqVR0V4s';
-const PAYPAL_SANDBOX_URL = 'https://api-m.sandbox.paypal.com';
+const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const APP_SECRET = process.env.PAYPAL_SECRET;
+const PAYPAL_SANDBOX_URL = process.env.PAYPAL_SANDBOX_URL;
 
 const auth = Buffer.from(`${CLIENT_ID}:${APP_SECRET}`).toString('base64');
-
-const generateAccessToken = async () => {
-  try {
-    const auth = Buffer.from(`${CLIENT_ID}:${APP_SECRET}`).toString('base64');
-    const response = await fetch(`${PAYPAL_SANDBOX_URL}/v1/oauth2/token`, {
-      method: 'POST',
-      body: 'grant_type=client_credentials',
-      headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (!response.ok) {
-      const data = await response.text();
-      return undefined;
-    }
-    const data = await response.json();
-    return {
-      accessToken: data.access_token,
-      expiresIn: data.expires_in,
-    };
-  } catch (err) {
-    return undefined;
-  }
-};
 
 export interface InfoPayment {
   invoiceId: string;

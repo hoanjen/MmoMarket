@@ -16,4 +16,9 @@ export default registerAs('', () => ({
     mailHost: process.env.MAIL_HOST,
     mailPort: process.env.MAIL_PORT,
   },
+  payPal: {
+    clientId: process.env.PAYPAL_CLIENT_ID,
+    secret: process.env.PAYPAL_SECRET,
+    sandboxURL: process.env.PAYPAL_SANDBOX_URL,
+  },
 }));
