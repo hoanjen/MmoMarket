@@ -24,18 +24,23 @@ export class PaymentService {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
+
     try {
       await queryRunner.startTransaction();
       const newTransaction = queryRunner.manager.getRepository(Transaction).create({
         action: PayMent.DEPOSIT,
-        amount: depositInput.amount,
+        amount: depositInput.amount * 25600,
         status: PayMentStatus.PENDING,
         user_id: req.user.sub,
+        paypal_id: '',
       });
-      const transaction = await queryRunner.manager.save(newTransaction);
 
+      const transaction = await queryRunner.manager.save(newTransaction);
       const depositInputHasId: InfoPayment = { ...depositInput, invoiceId: transaction.id };
       const data = await createOrder(depositInputHasId);
+
+      transaction.paypal_id = data.id;
+      await queryRunner.manager.save(transaction);
 
       await queryRunner.commitTransaction();
       await queryRunner.release();
@@ -46,8 +51,9 @@ export class PaymentService {
         status: EResponse.SUCCESS,
       });
     } catch (error) {
+      console.log(JSON.stringify(error));
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException(error);
+      throw new BadRequestException(JSON.stringify(error));
     }
   }
 
@@ -60,14 +66,13 @@ export class PaymentService {
     try {
       await queryRunner.startTransaction();
       const transaction = await queryRunner.manager.getRepository(Transaction).findOne({
-        where: { id: verifyDepositInput.order_id },
+        where: { paypal_id: verifyDepositInput.order_id },
       });
 
       if (!transaction) {
         throw new BadRequestException('Transaction not found');
       }
       transaction.status = PayMentStatus.SUCCESS;
-
       await queryRunner.manager.save(transaction);
 
       const balance = await queryRunner.manager
@@ -87,7 +92,7 @@ export class PaymentService {
       });
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException(error);
+      throw new BadRequestException(JSON.stringify(error));
     }
   }
 }

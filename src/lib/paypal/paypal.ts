@@ -51,34 +51,40 @@ export async function createOrder(paymentInfo: InfoPayment) {
 
 export async function captureOrder(orderId: string) {
   const url = `${PAYPAL_SANDBOX_URL}/v2/checkout/orders/${orderId}/capture`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${auth}`,
-    },
-  });
-  const data: OrderResponseBody = await response.json();
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${auth}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new BadRequestException('Error capturing order');
-  }
+    const data: OrderResponseBody = await response.json();
 
-  let isCompleted = data.status === 'COMPLETED';
-  if (!data.purchase_units?.length) {
-    throw new BadRequestException('Error capturing order');
-  }
+    if (!response.ok) {
+      throw new BadRequestException('Error capturing order');
+    }
 
-  for (const purchase_unit of data.purchase_units) {
-    for (const capture of purchase_unit.payments?.captures ?? []) {
-      if (capture.status !== 'COMPLETED') {
-        isCompleted = false;
+    let isCompleted = data.status === 'COMPLETED';
+    if (!data.purchase_units?.length) {
+      throw new BadRequestException('Error capturing order');
+    }
+
+    for (const purchase_unit of data.purchase_units) {
+      for (const capture of purchase_unit.payments?.captures ?? []) {
+        if (capture.status !== 'COMPLETED') {
+          isCompleted = false;
+        }
       }
     }
-  }
 
-  if (!isCompleted) {
-    throw new BadRequestException('Error capturing order, capture is not completed');
+    if (!isCompleted) {
+      throw new BadRequestException('Error capturing order, capture is not completed');
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw new BadRequestException('Error capturing order');
   }
-  return data;
 }
