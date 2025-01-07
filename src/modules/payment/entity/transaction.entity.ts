@@ -1,4 +1,4 @@
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { User } from 'src/modules/user/entity/user.entity';
 import {
   Entity,
@@ -23,6 +23,9 @@ export class Transaction {
   @Column({ type: 'enum', enum: PayMent })
   @IsEnum(PayMent)
   action: PayMent;
+
+  @Column({ nullable: false })
+  paypal_id: string;
 
   @Column({ nullable: false })
   amount: number;

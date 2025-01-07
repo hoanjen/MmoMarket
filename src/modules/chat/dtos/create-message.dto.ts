@@ -20,7 +20,7 @@ export class CreateMessageDto {
     example: 'file name',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   readonly file_name: string;
 
   @ApiProperty({

@@ -12,6 +12,7 @@ import { ProductService } from '../product/product.service';
 import { Console } from 'console';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { GetOrderDetalDto } from './dtos/get-order-detail.dto';
+import { Balance } from '../payment/entity/balance.entity';
 
 @Injectable()
 export class OrderService {
@@ -50,7 +51,17 @@ export class OrderService {
       throw new BadRequestException('vans_product_id invalid !!');
     }
 
+    const balanceUser = await queryRunner.manager.getRepository(Balance).findOne({
+      where: { user_id: req.user.sub },
+    });
+
+    if (balanceUser.account_balance < checkVansProduct.price * quantity) {
+      throw new BadRequestException('Your balance is not enough !!');
+    }
+
     try {
+      balanceUser.account_balance -= checkVansProduct.price * quantity;
+      await queryRunner.manager.save(balanceUser);
       const data_products = await this.vansProductService.getDataProduct({ vans_product_id, quantity }, queryRunner);
       await this.vansProductService.updateVansProductQuantity(vans_product_id, quantity, queryRunner);
       await this.productService.updateProductQuantitySold(queryRunner, quantity, checkVansProduct.product.id);
