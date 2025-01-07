@@ -14,6 +14,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUserByIdDto } from './dtos/find-user-by-id.dto';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Balance } from '../payment/entity/balance.entity';
+import { relative } from 'path';
 
 @Injectable()
 export class UserService {
@@ -231,6 +232,7 @@ export class UserService {
   async findUserByToken(req: any) {
     const user = await this.userRepository.findOne({
       where: { id: req.user.sub },
+      relations: ['balance'],
     });
     const role = await this.roleRepository.findOne({
       where: {
