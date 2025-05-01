@@ -24,6 +24,22 @@ export class ProductService {
     private readonly categoryTypeService: CategoryTypeService,
   ) {}
 
+  /**
+   * Get all products created by a user
+   * @returns Array of products
+   */
+
+  async getProductByOwner(user_id: string) {
+    const product_list = await this.productRepository.find({ where: { user_id } });
+
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      message: 'Get product by owner success',
+      data: product_list,
+    });
+  }
+
   async getProduct() {
     return await this.productRepository.find();
   }

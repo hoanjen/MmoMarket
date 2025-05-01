@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { createClient } from 'redis';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GatewayService {
+  private readonly configService = new ConfigService();
   private readonly redisClient = createClient({
-    url: 'redis://default:AQfUyeLMGhaUIscvM5UB8V9JXRNQONEq@redis-19443.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com:19443',
+    url: this.configService.get<string>('redis.url'),
+    // url: 'redis://localhost:6379',
   });
   constructor() {
     this.redisClient.connect();
