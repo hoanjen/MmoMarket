@@ -36,7 +36,7 @@ export class ProductController {
   @ApiOperation({ summary: 'Get Product By Owner' })
   @Roles(Role.User)
   @ApiBearerAuth()
-  @Get()
+  @Get('owner')
   async productByOwner(@Request() req: any) {
     return this.productService.getProductByOwner(req.user.sub);
   }
