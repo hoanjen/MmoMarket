@@ -1,6 +1,7 @@
 {
   "name": "core",
   "version": "0.0.1",
+  "node":"v18.x.x",
   "description": "",
   "author": "",
   "private": true,

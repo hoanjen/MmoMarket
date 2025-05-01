@@ -4,7 +4,8 @@ import { createClient } from 'redis';
 @Injectable()
 export class GatewayService {
   private readonly redisClient = createClient({
-    url: 'redis://default:AQfUyeLMGhaUIscvM5UB8V9JXRNQONEq@redis-19443.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com:19443',
+    // url: 'redis://default:AQfUyeLMGhaUIscvM5UB8V9JXRNQONEq@redis-19443.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com:19443',
+    url: 'redis://localhost:6379',
   });
   constructor() {
     this.redisClient.connect();

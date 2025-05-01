@@ -1,0 +1,3 @@
+# Ignore all node modules and dist folder when build
+
+node_modules

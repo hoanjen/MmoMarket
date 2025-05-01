@@ -33,6 +33,14 @@ export class ProductController {
     return this.productService.getProduct();
   }
 
+  @ApiOperation({ summary: 'Get Product By Owner' })
+  @Roles(Role.User)
+  @ApiBearerAuth()
+  @Get()
+  async productByOwner(@Request() req: any) {
+    return this.productService.getProductByOwner(req.user.sub);
+  }
+
   @ApiOperation({ summary: 'Create Product' })
   @Roles(Role.Admin, Role.User)
   @ApiBearerAuth()

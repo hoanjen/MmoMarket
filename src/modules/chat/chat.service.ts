@@ -160,7 +160,7 @@ export class ChatService {
       INNER JOIN
         users u ON u.id = m.user_id
       INNER JOIN (
-          SELECT 
+          SELECT
             group_id, MAX(created_at) AS latest_message
           FROM 
             messages
