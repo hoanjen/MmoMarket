@@ -34,7 +34,6 @@ export class ProductController {
   }
 
   @ApiOperation({ summary: 'Get Product By Owner' })
-  @Roles(Role.User)
   @ApiBearerAuth()
   @Get('owner')
   async productByOwner(@Request() req: any) {
