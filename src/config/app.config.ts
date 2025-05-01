@@ -5,6 +5,9 @@ export default registerAs('', () => ({
     port: process.env.PORT || 8000,
     whiteList: process.env.WHITE_LIST,
   },
+  redis: {
+    url: process.env.REDIS_URL,
+  },
   jwt: {
     jwtSecret: process.env.JWT_SECRET,
     tokenExpiresTime: process.env.TOKEN_EXPIRES_TIME,
