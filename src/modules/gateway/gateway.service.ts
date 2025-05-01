@@ -4,9 +4,9 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GatewayService {
-  private readonly configService = new ConfigService();
+  // private readonly configService = new ConfigService();
   private readonly redisClient = createClient({
-    url: this.configService.get<string>('redis.url'),
+    url: process.env.REDIS_URL ?? 'redis://localhost:6379',
     // url: 'redis://localhost:6379',
   });
   constructor() {
