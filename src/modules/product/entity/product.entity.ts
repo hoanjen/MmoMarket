@@ -25,8 +25,8 @@ export class Product {
     this.description = description;
     this.image = image;
     this.quantity_sold = 0;
-    this.minPrice = 1e9;
-    this.maxPrice = 0;
+    this.minPrice = 1;
+    this.maxPrice = 1e9;
   }
 
   @PrimaryColumn({ type: 'uuid' })
@@ -78,6 +78,9 @@ export class Product {
 
   @Column({ type: 'boolean', default: false })
   deleted: boolean;
+
+  @Column({ type: 'boolean', default: true })
+  is_active: boolean;
 
   @CreateDateColumn()
   created_at: Date; // Creation date

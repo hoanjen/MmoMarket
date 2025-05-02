@@ -11,15 +11,20 @@ import { CategoryService } from '../category/category.service';
 import { GetProductWithCategoryTypeIdDto } from './dtos/get-product-with-category-type-id';
 import { GetCategoryTypeDto, GetProductByQueryDto } from './dtos/get-product-by-query.dto';
 import { CategoryTypeService } from '../category/category-type.service';
-import { SortBy } from './product.constant';
+import { SortBy, StatusProductSale } from './product.constant';
 import { GetProductDetailDto } from './dtos/get-product.dto';
+import { DataProduct } from './entity/data-product.entity';
+import { UpdateProductDto } from './dtos/update-product.dto';
+import { VansProduct } from './entity/vans-product.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-    private readonly userService: UserService,
+    @InjectRepository(VansProduct)
+    private readonly vansProductRepository: Repository<VansProduct>,
+    // private readonly userService: UserService,
     private readonly categoryService: CategoryService,
     private readonly categoryTypeService: CategoryTypeService,
   ) {}
@@ -30,7 +35,7 @@ export class ProductService {
    */
 
   async getProductByOwner(user_id: string) {
-    const product_list = await this.productRepository.find({ where: { user_id } });
+    const product_list = await this.productRepository.find({ where: { user_id }, order: { created_at: 'DESC' } });
 
     return ReturnCommon({
       statusCode: HttpStatus.OK,
@@ -55,7 +60,10 @@ export class ProductService {
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
       message: 'get product success !',
-      data: product_detail,
+      data: {
+        ...product_detail,
+        vans_product: product_detail.vans_products.filter((item) => item.is_active === true),
+      },
     });
   }
 
@@ -101,6 +109,7 @@ export class ProductService {
     }
 
     productsQuery.andWhere('products.deleted = :deleted', { deleted: false });
+    productsQuery.andWhere('products.is_active = :is_active', { is_active: true });
 
     if (keyword) {
       productsQuery = productsQuery.andWhere('LOWER(products.title) LIKE LOWER(:keyword)', {
@@ -149,5 +158,56 @@ export class ProductService {
       .set({ quantity_sold: () => `quantity_sold + ${quantity}` })
       .where('id = :id', { id: product_id })
       .execute();
+  }
+
+  async getDataProduct(user_id: string, getProductDetailInput: GetProductDetailDto) {
+    const { product_id } = getProductDetailInput;
+    const product = await this.productRepository.findOne({
+      where: {
+        id: product_id,
+        user_id,
+      },
+    });
+
+    if (!product) {
+      throw new BadRequestException('Product not found');
+    }
+    const vanProduct = await this.vansProductRepository.find({
+      where: {
+        product_id,
+      },
+    });
+
+    return ReturnCommon({
+      message: 'success',
+      data: vanProduct,
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async toggleActiveProduct(user_id: string, getProductDetailInput: GetProductDetailDto) {
+    const { product_id } = getProductDetailInput;
+
+    const product = await this.productRepository.findOne({
+      where: {
+        user_id,
+        id: product_id,
+      },
+    });
+    if (!product) {
+      throw new BadRequestException('Product not found');
+    }
+    return await this.productRepository.update(
+      {
+        id: product.id,
+      },
+      { is_active: !product.is_active },
+    );
+  }
+
+  async updateProduct(user_id: string, getProductDetailInput: GetProductDetailDto, data: UpdateProductDto) {
+    const { product_id } = getProductDetailInput;
+    return this.productRepository.update({ id: product_id, user_id }, { ...data });
   }
 }

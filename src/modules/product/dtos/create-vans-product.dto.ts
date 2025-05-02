@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
@@ -45,4 +45,43 @@ export class CreateVansProductDto {
     required: false,
   })
   readonly product_id: string;
+}
+
+export class UpdateVansProductDto {
+  @ApiProperty({
+    example: '10',
+    required: true,
+  })
+  @IsString()
+  @IsOptional()
+  readonly title?: string;
+
+  @ApiProperty({
+    example: 'description',
+    default: 'description',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  readonly description?: string;
+
+  @ApiProperty({
+    example: '100000',
+    default: '0',
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  readonly price?: number;
+}
+
+export class VanProductParamsDto {
+  @ApiProperty({
+    example: 'vanId',
+    required: true,
+  })
+  @IsUUID()
+  @IsNotEmpty()
+  readonly id: string;
 }

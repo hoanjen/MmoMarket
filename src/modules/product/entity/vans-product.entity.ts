@@ -45,6 +45,9 @@ export class VansProduct {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
+  @Column({ type: 'boolean', default: true })
+  is_active: boolean;
+
   @OneToMany(() => DataProduct, (dataProduct) => dataProduct.vans_product)
   @JoinColumn({ name: 'product_id' })
   data_products: DataProduct[];

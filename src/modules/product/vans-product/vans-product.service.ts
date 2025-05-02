@@ -1,5 +1,5 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateVansProductDto } from '../dtos/create-vans-product.dto';
+import { CreateVansProductDto, UpdateVansProductDto, VanProductParamsDto } from '../dtos/create-vans-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { VANS_PRODUCT_MODEL, VansProduct } from '../entity/vans-product.entity';
@@ -214,5 +214,55 @@ export class VansProductService {
   async updateVansProductQuantity(id: string, quantity: number, queryRunner: QueryRunner) {
     await queryRunner.manager.update(VansProduct, id, { quantity: () => `quantity - ${quantity}` });
     // or  await queryRunner.manager.query(`UPDATE vans_products SET quantity = quantity - $1 WHERE id = $2`, [quantity, id]);
+  }
+
+  async updateVansProduct(user_id: string, data: UpdateVansProductDto, vanProductParamsInput: VanProductParamsDto) {
+    const { id } = vanProductParamsInput;
+    return await this.vansProductRepository.update(id, { ...data });
+  }
+
+  async getDataProductByVansProduct(user_id: string, vanProductParamsInput: VanProductParamsDto) {
+    const { id } = vanProductParamsInput;
+    const vansProduct = await this.vansProductRepository
+      .createQueryBuilder('vansProduct')
+      .leftJoinAndSelect('vansProduct.product', 'product')
+      .where('vansProduct.id = :vansProductId', { vansProductId: id })
+      .andWhere('product.user_id = :user_id', { user_id })
+      .getOne();
+
+    if (!vansProduct) {
+      throw new BadRequestException('Van product not found');
+    }
+    const data = await this.dataProductRepository.find({
+      where: {
+        vans_product_id: id,
+        status: StatusProductSale.NOTSOLD,
+      },
+      order: {
+        created_at: 'DESC',
+      },
+    });
+    return ReturnCommon({
+      data,
+      message: 'success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+  async toggleActiveVanProduct(user_id: string, vanProductParamsInput: VanProductParamsDto) {
+    const { id } = vanProductParamsInput;
+    const vansProduct = await this.vansProductRepository
+      .createQueryBuilder('vansProduct')
+      .leftJoinAndSelect('vansProduct.product', 'product')
+      .where('vansProduct.id = :vansProductId', { vansProductId: id })
+      .andWhere('product.user_id = :user_id', { user_id })
+      .getOne();
+
+    if (!vansProduct) {
+      throw new BadRequestException('Van product not found');
+    }
+    return await this.vansProductRepository.update(id, {
+      is_active: !vansProduct.is_active,
+    });
   }
 }
