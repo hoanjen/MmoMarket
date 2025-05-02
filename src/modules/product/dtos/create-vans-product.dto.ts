@@ -77,6 +77,16 @@ export class UpdateVansProductDto {
 
   @ApiProperty({
     example: '100000',
+    default: '1',
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  readonly quantity?: number;
+
+  @ApiProperty({
+    example: '100000',
     default: '0',
     required: false,
   })
