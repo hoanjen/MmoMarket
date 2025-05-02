@@ -39,6 +39,16 @@ export class CreateVansProductDto {
   })
   readonly price: number;
 
+  @ApiProperty({
+    example: '100000',
+    default: '1',
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  readonly quantity?: number;
+
   @IsUUID()
   @ApiProperty({
     example: 'product_id',
