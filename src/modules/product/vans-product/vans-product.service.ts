@@ -37,7 +37,7 @@ export class VansProductService {
   }
 
   async createVansProduct(createVansProductInput: CreateVansProductDto, user_id: string) {
-    const { title, price, product_id, description } = createVansProductInput;
+    const { title, price, product_id, description, quantity } = createVansProductInput;
     const isProduct = await this.productRepository.findOne({
       where: { id: product_id, user_id },
     });
@@ -58,7 +58,7 @@ export class VansProductService {
       title,
       description,
       price,
-      quantity: 0,
+      quantity: quantity ?? 0,
       product_id,
     });
 
