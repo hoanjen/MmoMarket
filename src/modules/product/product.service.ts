@@ -176,6 +176,9 @@ export class ProductService {
       where: {
         product_id,
       },
+      order: {
+        created_at: 'DESC',
+      },
     });
 
     return ReturnCommon({
