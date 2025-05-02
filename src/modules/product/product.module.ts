@@ -11,7 +11,8 @@ import { UserModule } from '../user/user.module';
 import { VansProductController } from './vans-product/vans-product.controller';
 import { VansProductService } from './vans-product/vans-product.service';
 import { DataProduct } from './entity/data-product.entity';
-import { OrderModule } from '../order/order.module';
+import { DataProductController } from './data-product/data-product.controller';
+import { DataProductService } from './data-product/data-product.service';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import { OrderModule } from '../order/order.module';
     UserModule,
     TypeOrmModule.forFeature([Product, CategoryType, User, VansProduct, DataProduct]),
   ],
-  controllers: [ProductController, VansProductController],
-  providers: [ProductService, VansProductService],
+  controllers: [ProductController, VansProductController, DataProductController],
+  providers: [ProductService, VansProductService, DataProductService],
   exports: [ProductService, VansProductService],
 })
 export class ProductModule {}

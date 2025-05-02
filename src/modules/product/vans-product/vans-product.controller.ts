@@ -1,24 +1,20 @@
 import {
   Body,
   Controller,
-  FileTypeValidator,
   Get,
   HttpStatus,
-  MaxFileSizeValidator,
-  ParseFilePipe,
+  Param,
   ParseFilePipeBuilder,
+  Patch,
   Post,
-  Query,
   Req,
   Request,
-  Res,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { ApiFiles, IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
-import { CreateVansProductDto } from '../dtos/create-vans-product.dto';
+import { CreateVansProductDto, UpdateVansProductDto, VanProductParamsDto } from '../dtos/create-vans-product.dto';
 import { VansProductService } from './vans-product.service';
 import { CreateDataProductDto, IdVansProductDto } from '../dtos/create-data-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -37,6 +33,7 @@ export class VansProductController {
   async vansProduct(@Body() createVansProductInput: CreateVansProductDto, @Req() req: any) {
     return this.vansProductService.createVansProduct(createVansProductInput, req.user.sub);
   }
+
   @Roles(Role.User, Role.Admin)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create Data-Product' })
@@ -85,5 +82,32 @@ export class VansProductController {
     @Body() IdVansProductInput: IdVansProductDto,
   ) {
     return this.vansProductService.importDataProductExcecl(file[0], IdVansProductInput.vans_product_id, req.user.sub);
+  }
+
+  @Roles(Role.User, Role.Admin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update Vans-Product' })
+  @Patch(':id')
+  async updateVansProduct(
+    @Body() data: UpdateVansProductDto,
+    @Req() req: any,
+    @Param() vanProductParamsInput: VanProductParamsDto,
+  ) {
+    return this.vansProductService.updateVansProduct(req.user.sub, data, vanProductParamsInput);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Active and in active product' })
+  @Post(':id')
+  async toggleActiveVanProduct(@Request() req: any, @Param() vanProductParamsInput: VanProductParamsDto) {
+    return this.vansProductService.toggleActiveVanProduct(req.user.sub, vanProductParamsInput);
+  }
+
+  @Roles(Role.User, Role.Admin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get data product by Vans-Product' })
+  @Get(':id/data-product')
+  async getDataProduct(@Req() req: any, @Param() vanProductParamsInput: VanProductParamsDto) {
+    return this.vansProductService.getDataProductByVansProduct(req.user.sub, vanProductParamsInput);
   }
 }
