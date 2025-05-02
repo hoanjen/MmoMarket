@@ -25,8 +25,8 @@ export class Product {
     this.description = description;
     this.image = image;
     this.quantity_sold = 0;
-    this.minPrice = 1;
-    this.maxPrice = 1e9;
+    this.minPrice = 1e9;
+    this.maxPrice = 0;
   }
 
   @PrimaryColumn({ type: 'uuid' })
