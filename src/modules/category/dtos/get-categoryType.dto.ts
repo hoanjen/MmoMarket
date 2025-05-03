@@ -39,3 +39,12 @@ export class GetQueryCategoryTypeDto {
   @Transform(({ value }) => (typeof value === 'string' ? [value] : value))
   readonly category_type_ids?: Array<string>;
 }
+
+export class CategoryTypeParamDto {
+  @ApiProperty({
+    example: 'id',
+  })
+  @IsNotEmpty()
+  @IsUUID()
+  id: string;
+}
