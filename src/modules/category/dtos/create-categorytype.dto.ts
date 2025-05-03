@@ -19,3 +19,14 @@ export class CreateCategoryTypeDto {
   @IsNotEmpty()
   readonly category_id: string;
 }
+
+export class CreateCategoryTypeV2Dto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Ten danh muc type',
+  })
+  @IsString()
+  @IsNotEmpty()
+  readonly name: string;
+}

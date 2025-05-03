@@ -5,8 +5,8 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
-import { CreateCategoryDto } from './dtos/create-category.dto';
-import { CreateCategoryTypeDto } from './dtos/create-categorytype.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dtos/create-category.dto';
+import { CreateCategoryTypeDto, CreateCategoryTypeV2Dto } from './dtos/create-categorytype.dto';
 import { GetCategoryDto } from './dtos/get-category.dto';
 import { GetProductOfCategoryTypeDto } from './dtos/get-product-of-categorytype.dto';
 import { GetCategoryTypeDto } from './dtos/get-categoryType.dto';
@@ -89,6 +89,51 @@ export class CategoryService {
         newCategory,
       },
       message: 'Create category successfully !!',
+    });
+  }
+
+  async getAlCategory() {
+    const category = await this.categoryRepository.find();
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: category,
+      message: 'Get all category successfully',
+    });
+  }
+
+  async updateCategory(id: string, updateCategoryInput: UpdateCategoryDto) {
+    return await this.categoryRepository.update(id, { ...updateCategoryInput });
+  }
+
+  async getCategoryTypeByCategory(id: string) {
+    const categoryType = await this.categoryTypeRepository.find({
+      where: {
+        category_id: id,
+      },
+    });
+
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: categoryType,
+      message: 'Get  category type successfully',
+    });
+  }
+
+  async createCategoryType(id: string, data: CreateCategoryTypeV2Dto) {
+    const category_type = this.categoryTypeRepository.create({
+      category_id: id,
+      ...data,
+    });
+
+    await this.categoryTypeRepository.save(category_type);
+
+    return ReturnCommon({
+      statusCode: HttpStatus.CREATED,
+      status: EResponse.SUCCESS,
+      data: category_type,
+      message: 'Get  category type successfully',
     });
   }
 }
