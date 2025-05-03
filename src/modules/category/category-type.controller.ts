@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { CategoryTypeService } from './category-type.service';
-import { CreateCategoryTypeDto } from './dtos/create-categorytype.dto';
+import { CreateCategoryTypeDto, UpdateCategoryTypeDto } from './dtos/create-categorytype.dto';
 import { GetProductOfCategoryTypeDto } from './dtos/get-product-of-categorytype.dto';
-import { GetCategoryTypeDto, GetQueryCategoryTypeDto } from './dtos/get-categoryType.dto';
+import { CategoryTypeParamDto, GetCategoryTypeDto, GetQueryCategoryTypeDto } from './dtos/get-categoryType.dto';
 
 @ApiTags('Category-type')
 @Controller('category-type')
@@ -38,5 +38,13 @@ export class CategoryTypeController {
   @Get('/query-category-type')
   async getVansProduct(@Query() getQueryCategoryTypeDto: GetQueryCategoryTypeDto) {
     return this.categoryTypeService.getCategoryTypeByQuery(getQueryCategoryTypeDto);
+  }
+
+  @ApiBearerAuth()
+  @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Get CategoryType By Query' })
+  @Patch(':id')
+  async updateCategoryType(@Param() { id }: CategoryTypeParamDto, @Body() data: UpdateCategoryTypeDto) {
+    return this.categoryTypeService.updateCategoryType(id, data);
   }
 }

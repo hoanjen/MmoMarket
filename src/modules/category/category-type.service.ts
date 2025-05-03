@@ -6,7 +6,7 @@ import { Category } from './entity/category.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
 import { CategoryService } from './category.service';
-import { CreateCategoryTypeDto } from './dtos/create-categorytype.dto';
+import { CreateCategoryTypeDto, UpdateCategoryTypeDto } from './dtos/create-categorytype.dto';
 import { GetProductOfCategoryTypeDto } from './dtos/get-product-of-categorytype.dto';
 import { Product } from '../product/entity/product.entity';
 import { VansProduct } from '../product/entity/vans-product.entity';
@@ -144,5 +144,9 @@ export class CategoryTypeService {
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
     });
+  }
+
+  async updateCategoryType(id: string, data: UpdateCategoryTypeDto) {
+    return await this.categoryTypeRepository.update(id, { ...data });
   }
 }
