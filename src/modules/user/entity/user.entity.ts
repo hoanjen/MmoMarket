@@ -24,6 +24,7 @@ import { Transaction } from 'src/modules/payment/entity/transaction.entity';
 import { Member } from 'src/modules/chat/entity/member.entity';
 import { Group } from 'src/modules/chat/entity/group.entity';
 import { Message } from 'src/modules/chat/entity/message.entity';
+import { Report } from 'src/modules/order/entity/report.entity';
 
 export const USER_MODEL = 'users';
 
@@ -49,9 +50,6 @@ export class User {
 
   @Column({ nullable: false, unique: true })
   username: string;
-
-  @Column({ nullable: false })
-  phone_number: string;
 
   @Column({ nullable: true })
   google_id: string;
@@ -103,6 +101,9 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.user)
   messages: Message[];
+
+  @OneToMany(() => Report, (report) => report.user)
+  reposts: Report[];
 
   @CreateDateColumn()
   created_at: Date; // Creation date

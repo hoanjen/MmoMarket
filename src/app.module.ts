@@ -19,6 +19,8 @@ import { GatewayModule } from './modules/gateway/gateway.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminModule } from './modules/admin/admin.module';
+import { WorkerModule } from './modules/worker/worker.module';
+import { RedisCacheModule } from './modules/cache/redis-cache.module';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { AdminModule } from './modules/admin/admin.module';
         PORT: Joi.number().default(3000),
       }),
       isGlobal: true,
+      cache: true,
     }),
     TypeOrmModule.forRoot(DatabaseConfigExport),
     UserModule,
@@ -49,6 +52,8 @@ import { AdminModule } from './modules/admin/admin.module';
     GatewayModule,
     ChatModule,
     AdminModule,
+    WorkerModule,
+    RedisCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

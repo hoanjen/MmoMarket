@@ -2,9 +2,10 @@ import { Body, Controller, Get, Param, Post, Query, Request } from '@nestjs/comm
 import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { BuyVansProductDto } from './dtos/buy-vans-product.dto';
-import { GetOrdersDto } from './dtos/get-orders.dto';
+import { GetOrdersByMerchantDto, GetOrdersDto } from './dtos/get-orders.dto';
 import { RequestAuth } from 'src/common/interface.common';
 import { GetOrderDetalDto } from './dtos/get-order-detail.dto';
+import { CancelReportOrderDTO, ReportOrderDTO, ReturnMoneyForReportOrderDTO } from './dtos/report-order.dto';
 
 @ApiTags('Order')
 @Controller('order')
@@ -16,6 +17,37 @@ export class OrderController {
   @Post()
   async buyVansProduct(@Request() req: any, @Body() buyVansProductInput: BuyVansProductDto) {
     return this.orderSevice.createOrder(req, buyVansProductInput);
+  }
+
+  @ApiOperation({ summary: 'Report Order' })
+  @ApiBearerAuth()
+  @Post('/report')
+  async reportOrder(@Request() req: any, @Body() reportOrderInput: ReportOrderDTO) {
+    return this.orderSevice.reportOrder(req, reportOrderInput);
+  }
+
+  @ApiOperation({ summary: 'Cancel Report Order' })
+  @ApiBearerAuth()
+  @Post('/cancel-report')
+  async cancelReportOrder(@Request() req: any, @Body() cancelReportOrderInput: CancelReportOrderDTO) {
+    return this.orderSevice.cancelReportOrder(req, cancelReportOrderInput);
+  }
+
+  @ApiOperation({ summary: 'Get Orders By Merchant' })
+  @ApiBearerAuth()
+  @Get('/orders-merchant')
+  async getOrdersByMerchant(@Request() req: RequestAuth, @Query() getOrdersByMerchantInput: GetOrdersByMerchantDto) {
+    return this.orderSevice.getOrderByMerchant(req.user.sub, getOrdersByMerchantInput);
+  }
+
+  @ApiOperation({ summary: 'Return Orders By Merchant' })
+  @ApiBearerAuth()
+  @Post('/return-merchant')
+  async returnMoneyForReportOrder(
+    @Request() req: RequestAuth,
+    @Body() returnMoneyForReportOrderInput: ReturnMoneyForReportOrderDTO,
+  ) {
+    return this.orderSevice.returnMoneyForReportOrder(req.user.sub, returnMoneyForReportOrderInput);
   }
 
   @ApiOperation({ summary: 'Get Orders by token' })

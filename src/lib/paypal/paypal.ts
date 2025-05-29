@@ -84,7 +84,56 @@ export async function captureOrder(orderId: string) {
     }
     return data;
   } catch (error) {
-    console.log(error);
     throw new BadRequestException('Error capturing order');
   }
+}
+
+export async function getAccessTokenPaypalAppMMO() {
+  const url = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  const data = await response.json();
+  return data.access_token;
+}
+
+export async function withdrawPaypayByUser(paypal_email: string, amount: number, transaction_id: string) {
+  const access_token = await getAccessTokenPaypalAppMMO();
+
+  const res = await fetch('https://api-m.sandbox.paypal.com/v1/payments/payouts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${access_token}`,
+    },
+    body: JSON.stringify({
+      sender_batch_header: {
+        sender_batch_id: `${transaction_id}`,
+        email_subject: 'Bạn nhận được khoản thanh toán từ mmo market',
+        email_message: 'You have received a payout! Thanks for using our service!',
+      },
+      items: [
+        {
+          recipient_type: 'EMAIL',
+          amount: {
+            value: `${amount}`,
+            currency: 'USD',
+          },
+          note: 'Cảm ơn đã sử dụng dịch vụ',
+          receiver: `${paypal_email}`,
+        },
+      ],
+    }),
+  });
+  if (res.status == 201) {
+    return true;
+  }
+  return false;
 }

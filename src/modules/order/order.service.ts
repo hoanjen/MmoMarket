@@ -2,7 +2,7 @@ import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { BuyVansProductDto } from './dtos/buy-vans-product.dto';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Discount } from './entity/discount.entity';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, In, LessThan, Repository } from 'typeorm';
 import { Order, ORDER_ENTITY } from './entity/order.entity';
 import { VansProductService } from '../product/vans-product/vans-product.service';
 import { DataProductOrder } from './entity/data-product-order.entity';
@@ -13,6 +13,11 @@ import { Console } from 'console';
 import { GetOrdersDto } from './dtos/get-orders.dto';
 import { GetOrderDetalDto } from './dtos/get-order-detail.dto';
 import { Balance } from '../payment/entity/balance.entity';
+import { Freeze } from './entity/freeze.entity';
+import { StatusOrder } from './order.constant';
+import { Report } from './entity/report.entity';
+import { CancelReportOrderDTO, ReportOrderDTO, ReturnMoneyForReportOrderDTO } from './dtos/report-order.dto';
+import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
 export class OrderService {
@@ -23,28 +28,194 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(DataProductOrder)
     private readonly dataProductOrderRepository: Repository<DataProductOrder>,
+    @InjectRepository(Freeze)
+    private readonly freezeRepository: Repository<Freeze>,
+    @InjectRepository(Report)
+    private readonly reportRepository: Repository<Report>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly vansProductService: VansProductService,
     private readonly productService: ProductService,
+    private readonly paymentService: PaymentService,
   ) {}
+
+  async updateOrderFreeze() {
+    const now = new Date();
+
+    const orders = await this.orderRepository.find({
+      where: { status: StatusOrder.FREEZE, unlock_time: LessThan(now) },
+      relations: ['freeze', 'user'],
+    });
+
+    const order_ids = [];
+    const increaseBalance: number[] = [];
+    const user_ids: string[] = [];
+    orders.forEach((item) => {
+      order_ids.push(item.id);
+      user_ids.push(item.freeze.merchant_id);
+      user_ids.push(item.user_id);
+      increaseBalance.push(item.freeze.amount);
+      increaseBalance.push(item.freeze.return);
+    });
+    if (order_ids.length > 0) {
+      await Promise.all(this.paymentService.balanceOrderSuccess(user_ids, increaseBalance));
+
+      await this.orderRepository.update(order_ids, { status: StatusOrder.SUCCESS });
+    }
+  }
+
+  async reportOrder(req: any, reportOrderInput: ReportOrderDTO) {
+    const { order_id, reason, merchant_id } = reportOrderInput;
+
+    const order = await this.orderRepository.findOne({ where: { id: order_id, status: StatusOrder.FREEZE } });
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    if (order.user_id != req.user.sub) {
+      throw new BadRequestException('You are not owner of this order');
+    }
+
+    const reportCheck = await this.reportRepository.findOne({ where: { order_id } });
+
+    if (reportCheck) {
+      throw new BadRequestException('Order has been reported');
+    }
+
+    const vans_product = await this.vansProductService.getVansProductById(order.vans_product_id);
+    if (vans_product.product.user_id != merchant_id) {
+      throw new BadRequestException('Merchant not found');
+    }
+
+    await this.orderRepository.update(order_id, { status: StatusOrder.REPORT });
+
+    const newReport = this.reportRepository.create({
+      user_id: req.user.sub,
+      order_id,
+      merchant_id,
+      reason,
+    });
+
+    const report = await this.reportRepository.save(newReport);
+
+    return ReturnCommon({
+      message: 'Report order success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: report,
+    });
+  }
+
+  async cancelReportOrder(req: any, canceclReportOrderInput: CancelReportOrderDTO) {
+    const { order_id } = canceclReportOrderInput;
+
+    const order = await this.orderRepository.findOne({ where: { id: order_id } });
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    if (order.user_id != req.user.sub) {
+      throw new BadRequestException('You are not owner of this order');
+    }
+
+    const report = await this.reportRepository.findOne({ where: { order_id } });
+
+    if (!report) {
+      throw new BadRequestException('Report not found');
+    }
+
+    await this.reportRepository.delete(report.id);
+
+    await this.orderRepository.update(order_id, { status: StatusOrder.FREEZE });
+
+    return ReturnCommon({
+      message: 'Cancel Report order success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: '',
+    });
+  }
+
+  async updateFreezeReturn(order_id: string) {
+    const order = await this.orderRepository
+      .createQueryBuilder('order')
+      .where('order.id = :order_id', { order_id })
+      .leftJoinAndSelect('order.freeze', 'freeze')
+      .leftJoinAndSelect('order.vans_product', 'vans_product')
+      .getOne();
+    if (order.status == StatusOrder.RETURN) {
+      throw new BadRequestException('Order has been refunded');
+    }
+
+    if (order.status == StatusOrder.REPORT) {
+      throw new BadRequestException('Order has been reported');
+    }
+
+    if (order.status == StatusOrder.SUCCESS) {
+      throw new BadRequestException('Order has been success');
+    }
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    await this.freezeRepository.update(order.freeze.id, {
+      return: (order.quantity * order.price * order.vans_product.return_percent) / 100,
+    });
+  }
+
+  async getOrderByMerchant(user_id: string, getOrdersInput: GetOrdersDto) {
+    const { limit, page } = getOrdersInput;
+
+    const orders = await this.productService.getOrdersByMerchant(user_id, limit, page);
+
+    return ReturnCommon({
+      message: 'Get orders success',
+      data: orders,
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async returnMoneyForReportOrder(user_id: string, returnMoneyForReportOrderInput: ReturnMoneyForReportOrderDTO) {
+    const { order_id } = returnMoneyForReportOrderInput;
+
+    const order = await this.orderRepository.findOne({
+      where: { id: order_id, status: StatusOrder.REPORT },
+      relations: ['freeze'],
+    });
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    if (order.freeze.merchant_id != user_id) {
+      throw new BadRequestException('You are not merchant of this order');
+    }
+
+    await this.orderRepository.update(order_id, { status: StatusOrder.RETURN });
+
+    await this.paymentService.returnOrder(order.user_id, order.freeze.amount);
+
+    await this.freezeRepository.delete(order.freeze.id);
+
+    return ReturnCommon({
+      message: 'Return money for report order success',
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: 'Ok',
+    });
+  }
 
   async createOrder(req: any, buyVansProductInput: BuyVansProductDto) {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const { discount_id, vans_product_id, quantity } = buyVansProductInput;
-    let isDiscount;
-    if (discount_id) {
-      try {
-        isDiscount = await this.discountRepository.findOne({
-          where: { id: discount_id },
-        });
-      } catch (error) {
-        throw new BadRequestException('discount_id is invalid !!');
-      }
-    }
+    const { vans_product_id, quantity } = buyVansProductInput;
+
     const checkVansProduct = await this.vansProductService.getVansProduct(vans_product_id, queryRunner);
 
     if (!checkVansProduct) {
@@ -70,7 +241,8 @@ export class OrderService {
         price: checkVansProduct.price,
         vans_product_id,
         user_id: req.user.sub,
-        discount_id: discount_id === '' ? null : discount_id,
+        unlock_time: new Date(7 * 24 * 60 * 60 * 1000 + new Date().getTime()), //lock 7 day
+        discount_id: null,
       });
       const order = await queryRunner.manager.save(newOrder);
 
@@ -78,6 +250,15 @@ export class OrderService {
         order_id: order.id,
         data_product_id: item.id,
       }));
+
+      const newFreeze = this.freezeRepository.create({
+        order_id: order.id,
+        merchant_id: checkVansProduct.product.user_id,
+        amount: checkVansProduct.price * quantity,
+        return: 0,
+      });
+      await queryRunner.manager.save(newFreeze);
+
       await queryRunner.manager.insert(DataProductOrder, newDataProductOrders);
 
       await queryRunner.commitTransaction();
@@ -121,6 +302,8 @@ export class OrderService {
       .createQueryBuilder('orders')
       .where('orders.user_id = :user_id', { user_id: req.user.sub })
       .leftJoinAndSelect('orders.vans_product', 'vans_product')
+      .leftJoinAndSelect('orders.comments', 'comments')
+      .leftJoinAndSelect('orders.freeze', 'freeze')
       .leftJoinAndSelect('vans_product.product', 'product')
       .leftJoinAndSelect('product.user', 'user')
       .orderBy('orders.created_at', 'DESC')

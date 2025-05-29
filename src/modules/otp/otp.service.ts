@@ -9,6 +9,7 @@ import { User } from '../user/entity/user.entity';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RedisCacheService } from '../cache/redis-cache.service';
 
 @Injectable()
 export class OtpService {
@@ -19,56 +20,35 @@ export class OtpService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly redisCacheService: RedisCacheService,
   ) {}
 
-  async veryOtp(veryOtpInput: VeryOtpDto) {
-    const { otp, email } = veryOtpInput;
-    const user = await this.userRepository.findOne({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) {
-      throw new BadRequestException('User not exist!!');
-    }
-    const nowDate = new Date();
-    const otpEnity = await this.otpRepository
-      .createQueryBuilder('otp')
-      .where('otp.otp = :otp AND otp.expired > :nowDate', { otp, nowDate })
-      .getOne();
-    if (!otpEnity) {
-      throw new BadRequestException('Otp is not correct ! or expired');
+  async veryOtp(email: string, otp: number) {
+    const otpCache = await this.redisCacheService.get(`otp:${email}`);
+    if (!otpCache) {
+      throw new BadRequestException('Otp hết hạn');
     }
 
-    await this.otpRepository.delete({ user });
+    if (parseInt(otpCache as string) !== otp) {
+      throw new BadRequestException('Otp không đúng');
+    }
 
-    return ReturnCommon({
-      statusCode: HttpStatus.ACCEPTED,
-      status: EResponse.SUCCESS,
-      message: 'Very email success',
-      data: {},
-    });
+    await this.redisCacheService.del(`otp:${email}`);
+
+    return true;
   }
 
   async sendOtp(sendOtpInput: SendOtpDto) {
     const { email } = sendOtpInput;
     const user = await this.userRepository.findOne({ where: { email } });
 
-    if (!user) {
-      throw new BadRequestException('Email does not exist !');
+    if (user) {
+      throw new BadRequestException('Email exist !');
     }
 
     const otp = Math.round(Math.random() * 1000000).toString(10);
-    console.log(typeof otp);
-    const newOtp = this.otpRepository.create({
-      user,
-      otp,
-      mail_type: 'Very mail',
-      expired: new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000),
-    });
-    console.log(newOtp);
-    await this.otpRepository.save(newOtp);
-    console.log(1111);
+
+    await this.redisCacheService.set(`otp:${email}`, otp, 300);
     await this.mailerService.sendMail({
       to: sendOtpInput.email, // list of receivers
       from: process.env.MAIL_USER, // sender address
@@ -79,7 +59,6 @@ export class OtpService {
         url: 'iahdiahdi',
       },
     });
-
     return ReturnCommon({
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,

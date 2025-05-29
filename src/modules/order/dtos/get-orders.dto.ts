@@ -21,3 +21,23 @@ export class GetOrdersDto {
   @IsOptional()
   readonly page: number;
 }
+
+export class GetOrdersByMerchantDto {
+  @ApiProperty({
+    example: 10,
+    required: false,
+  })
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
+  @IsNumber()
+  @IsOptional()
+  readonly limit: number;
+
+  @ApiProperty({
+    example: 1,
+    required: false,
+  })
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
+  @IsNumber()
+  @IsOptional()
+  readonly page: number;
+}

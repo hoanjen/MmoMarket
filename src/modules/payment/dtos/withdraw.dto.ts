@@ -1,3 +1,4 @@
+import { ParseIntPipe } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -11,22 +12,21 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
 
-export class BuyVansProductDto {
+export class CreateWithdrawDto {
   @ApiProperty({
-    example: 'id vans product',
+    example: 10,
   })
-  @IsUUID()
-  @IsNotEmpty()
-  readonly vans_product_id: string;
-
   @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
+  @Type(() => Number)
+  readonly amount: number;
+
   @ApiProperty({
-    example: 'quantity',
+    example: 'EMAIL',
   })
-  @IsNumber()
+  @IsEmail()
   @IsNotEmpty()
-  readonly quantity: number;
+  @Transform(({ value }) => (typeof value === 'string' ? value : String(value)))
+  readonly paypal_email: string;
 }

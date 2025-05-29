@@ -7,12 +7,20 @@ import { JwtService } from '@nestjs/jwt';
 import { ReturnCommon } from 'src/common/utilities/base-response';
 import { EResponse } from 'src/common/interface.common';
 import { USER_ROLE } from '../user/user.constant';
+import { OtpService } from '../otp/otp.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly otpService: OtpService,
+  ) {}
 
   async signUp(signUpInput: SignUpDto) {
+    const { email, otp } = signUpInput;
+    await this.otpService.veryOtp(email, otp);
+
     return await this.userService.createUser(signUpInput);
   }
   async signIn(signUpInput: SignInDto) {

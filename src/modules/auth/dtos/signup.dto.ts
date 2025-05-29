@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, isNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+  isNotEmpty,
+} from 'class-validator';
 import { USER_GENDER } from 'src/modules/user/user.constant';
 
 export class SignUpDto {
@@ -11,6 +21,14 @@ export class SignUpDto {
   @IsNotEmpty()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   readonly email: string;
+
+  @ApiProperty({
+    example: 123456,
+  })
+  @Transform(({ value }) => (typeof value === 'string' ? parseInt(value) : value))
+  @IsNumber()
+  @IsNotEmpty()
+  readonly otp: number;
 
   @ApiProperty({
     example: 'password@123',
@@ -61,10 +79,10 @@ export class SignUpDto {
     example: '0929329992',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(20)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  readonly phone_number: string;
+  readonly phone_number?: string;
 
   @ApiProperty({
     example: '2001-02-03',

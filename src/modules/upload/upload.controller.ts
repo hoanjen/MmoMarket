@@ -34,7 +34,7 @@ export class UploadController {
       new ParseFilePipeBuilder()
         .addValidator(new CustomFileValidatorForFile('image/png,image/jpg,image/jpeg'))
         .addMaxSizeValidator({
-          maxSize: 300000,
+          maxSize: 30000000,
           message: 'File is too large',
         })
         .build(),

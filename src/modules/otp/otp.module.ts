@@ -8,14 +8,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Otp } from './entity/otp.entity';
 import { User } from '../user/entity/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RedisCacheModule } from '../cache/redis-cache.module';
 
 @Module({
   imports: [
+    RedisCacheModule,
     TypeOrmModule.forFeature([Otp, User]),
     MailerModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
         transport: {
-          host: configService.get<string>('otp.mailUser'),
+          host: 'smtp.gmail.com',
           port: configService.get<number>('otp.mailPort'),
           secure: false,
           auth: {
@@ -39,6 +41,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
   controllers: [OtpController],
   providers: [OtpService],
-  exports: [OtpModule],
+  exports: [OtpService],
 })
 export class OtpModule {}

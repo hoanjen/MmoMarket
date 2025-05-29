@@ -10,6 +10,13 @@ export class CreateCommentDto {
   readonly product_id: string;
 
   @ApiProperty({
+    example: 'order_id',
+  })
+  @IsString()
+  @IsNotEmpty()
+  readonly order_id: string;
+
+  @ApiProperty({
     example: 5,
   })
   @IsNumber()
