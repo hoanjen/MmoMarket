@@ -186,4 +186,20 @@ export class PaymentService {
       throw new BadRequestException(JSON.stringify(error));
     }
   }
+
+  async historyPaymentAdmin(getHistoryInput: GetHistoryDto) {
+    const { limit, page } = getHistoryInput;
+    const vlimit = limit ? limit : 100;
+    const vpage = page ? page : 1;
+    const skip = (vpage - 1) * vlimit;
+
+    const [transactions, total] = await this.transactionRepository
+      .createQueryBuilder('transactions')
+      .orderBy('transactions.created_at', 'DESC')
+      .take(vlimit)
+      .skip(skip)
+      .getManyAndCount();
+
+    return { transactions, total };
+  }
 }

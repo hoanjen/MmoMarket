@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { GetOverviewDashboardDto } from './dtos/get-overview-dashboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
@@ -11,7 +11,12 @@ import { GetListUserDto } from './dtos/get-list-user.dto';
 import { mapMonth } from './type';
 import { Role } from '../user/entity/role.entity';
 import { USER_ROLE } from '../user/user.constant';
-import { GetListProductDto } from './dtos/get-list-product.dto';
+import { GetHistoryDto, GetListProductDto } from './dtos/get-list-product.dto';
+import { ReturnCommon } from 'src/common/utilities/base-response';
+import { EResponse } from 'src/common/interface.common';
+import { Report } from '../order/entity/report.entity';
+import { PaymentService } from '../payment/payment.service';
+import { OrderService } from '../order/order.service';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +31,10 @@ export class AdminService {
     private categoryRepository: Repository<Category>,
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
+    @InjectRepository(Report)
+    private reportRepository: Repository<Report>,
+    private paymentService: PaymentService,
+    private orderService: OrderService,
   ) {}
 
   async getOverviewDashboard(getOverviewDashboardInput: GetOverviewDashboardDto) {
@@ -325,5 +334,65 @@ export class AdminService {
     }
     await this.productRepository.update({ id }, { deleted: !product.deleted });
     return 'OK';
+  }
+
+  async historyPayment(getHistoryInput: GetHistoryDto) {
+    const { limit, page } = getHistoryInput;
+    const vlimit = limit ? limit : 100;
+    const vpage = page ? page : 1;
+    const skip = (vpage - 1) * vlimit;
+    const history = await this.paymentService.historyPaymentAdmin(getHistoryInput);
+    const totalPages = Math.ceil(history.total / vlimit);
+    const nextPage = vpage < totalPages ? vpage + 1 : null;
+    const previousPage = vpage > 1 ? vpage - 1 : null;
+    return ReturnCommon({
+      message: 'Get history success',
+      data: {
+        transactions: history.transactions,
+        previousPage,
+        totalPages,
+        nextPage,
+        currentPage: vpage,
+        totalDocs: history.total,
+      },
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async getListReport() {
+    const report = await this.reportRepository
+      .createQueryBuilder('report')
+      .leftJoinAndSelect('report.user', 'user')
+      .leftJoinAndSelect('report.order', 'order')
+      .leftJoinAndSelect('order.vans_product', 'vans_product')
+      .leftJoinAndSelect('vans_product.product', 'product')
+      .getMany();
+    return ReturnCommon({
+      message: 'success',
+      data: report,
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async returnMoneyForUserByAdmin(order_id: string) {
+    const res = await this.orderService.returnMoneyForUserByAdmin(order_id);
+    return ReturnCommon({
+      message: 'success',
+      data: res,
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
+  }
+
+  async returnMoneyForMerchantByAdmin(order_id: string) {
+    const res = await this.orderService.returnMoneyForMerchantByAdmin(order_id);
+    return ReturnCommon({
+      message: 'success',
+      data: res,
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+    });
   }
 }
