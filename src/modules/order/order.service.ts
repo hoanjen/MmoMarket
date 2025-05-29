@@ -209,6 +209,42 @@ export class OrderService {
     });
   }
 
+  async returnMoneyForUserByAdmin(order_id: string) {
+    const order = await this.orderRepository.findOne({
+      where: { id: order_id, status: StatusOrder.REPORT },
+      relations: ['freeze'],
+    });
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    await this.orderRepository.update(order_id, { status: StatusOrder.RETURN });
+
+    await this.paymentService.returnOrder(order.user_id, order.freeze.amount);
+
+    await this.freezeRepository.delete(order.freeze.id);
+    return true;
+  }
+
+  async returnMoneyForMerchantByAdmin(order_id: string) {
+    const order = await this.orderRepository.findOne({
+      where: { id: order_id, status: StatusOrder.REPORT },
+      relations: ['freeze'],
+    });
+
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+
+    await this.orderRepository.update(order_id, { status: StatusOrder.SUCCESS });
+
+    await this.paymentService.returnOrder(order.freeze.merchant_id, order.freeze.amount);
+
+    await this.freezeRepository.delete(order.freeze.id);
+    return true;
+  }
+
   async createOrder(req: any, buyVansProductInput: BuyVansProductDto) {
     const queryRunner = this.dataSource.createQueryRunner();
 

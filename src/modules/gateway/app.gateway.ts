@@ -51,21 +51,17 @@ export class Gateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisc
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
-      console.log('11111111111111111');
       const token = Array.isArray(client.handshake.query.token)
         ? client.handshake.query.token[0]
         : client.handshake.query.token;
       if (!token) {
         throw new WsException('Missing token');
       }
-
       const user = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('jwt.jwtSecret'),
       });
       await this.gatewayService.addSocketId(user.payload.sub, client.id);
-      console.log('User connected:', user.payload.sub);
     } catch (error) {
-      console.log(error);
       client.disconnect();
     }
   }

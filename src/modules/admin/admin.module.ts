@@ -7,9 +7,11 @@ import { User } from '../user/entity/user.entity';
 import { Product } from '../product/entity/product.entity';
 import { Category } from '../category/entity/category.entity';
 import { Role } from '../user/entity/role.entity';
-
+import { Report } from '../order/entity/report.entity';
+import { PaymentModule } from '../payment/payment.module';
+import { OrderModule } from '../order/order.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, User, Product, Category, Role])],
+  imports: [TypeOrmModule.forFeature([Order, User, Product, Category, Role, Report]), PaymentModule, OrderModule],
   controllers: [AdminController],
   providers: [AdminService],
 })
