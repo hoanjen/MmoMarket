@@ -37,7 +37,7 @@ export class VansProductService {
   }
 
   async createVansProduct(createVansProductInput: CreateVansProductDto, user_id: string) {
-    const { title, price, product_id, description, quantity } = createVansProductInput;
+    const { title, price, product_id, description, return_percent } = createVansProductInput;
     const isProduct = await this.productRepository.findOne({
       where: { id: product_id, user_id },
     });
@@ -58,7 +58,8 @@ export class VansProductService {
       title,
       description,
       price,
-      quantity: quantity ?? 0,
+      quantity: 0,
+      return_percent,
       product_id,
     });
 
@@ -264,5 +265,9 @@ export class VansProductService {
     return await this.vansProductRepository.update(id, {
       is_active: !vansProduct.is_active,
     });
+  }
+
+  async getVansProductById(vans_product_id: string) {
+    return await this.vansProductRepository.findOne({ where: { id: vans_product_id }, relations: { product: true } });
   }
 }

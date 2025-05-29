@@ -19,7 +19,7 @@ export class CommentService {
   ) {}
 
   async createComment(createCommentInput: CreateCommentDto, user_id: string) {
-    const { content, product_id, star, image } = createCommentInput;
+    const { content, product_id, star, image, order_id } = createCommentInput;
     const isProduct = await this.productService.getProductById(product_id);
     if (!isProduct) {
       throw new BadRequestException('Product does not exist');
@@ -31,11 +31,21 @@ export class CommentService {
       throw new BadRequestException('You cannot rate a product without purchasing it');
     }
 
+    const commentCheck = await this.commentRepository.findOne({
+      where: { order_id },
+    });
+
+    if (commentCheck) {
+      throw new BadRequestException('You have already rated on this product');
+    }
+
+    await this.orderService.updateFreezeReturn(order_id);
     const newComment = this.commentRepository.create({
       content,
       product_id,
       star,
       user_id,
+      order_id,
       image,
     });
 
@@ -56,7 +66,7 @@ export class CommentService {
       .where('comment.product_id = :product_id', { product_id })
       .innerJoin('comment.user', 'user')
       .select('comment')
-      .addSelect(['user.id', 'user.full_name', 'user.avatar'])
+      .addSelect(['user.id', 'user.first_name', 'user.last_name', 'user.avatar'])
       .getMany();
     return ReturnCommon({
       message: 'Get comment success',

@@ -1,3 +1,4 @@
+import { ParseIntPipe } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -11,22 +12,24 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
-  ValidateNested,
 } from 'class-validator';
 
-export class BuyVansProductDto {
+export class GetHistoryDto {
   @ApiProperty({
-    example: 'id vans product',
+    example: 10,
+    required: false,
   })
-  @IsUUID()
-  @IsNotEmpty()
-  readonly vans_product_id: string;
-
   @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
-  @ApiProperty({
-    example: 'quantity',
-  })
   @IsNumber()
-  @IsNotEmpty()
-  readonly quantity: number;
+  @IsOptional()
+  readonly limit: number;
+
+  @ApiProperty({
+    example: 1,
+    required: false,
+  })
+  @Transform(({ value }) => (typeof value === 'number' ? value : parseInt(value)))
+  @IsNumber()
+  @IsOptional()
+  readonly page: number;
 }

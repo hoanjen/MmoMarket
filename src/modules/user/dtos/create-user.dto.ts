@@ -49,15 +49,6 @@ export class CreateUserDto {
   readonly username: string;
 
   @ApiProperty({
-    example: '0929329992',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(20)
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  readonly phone_number: string;
-
-  @ApiProperty({
     example: '2001-02-03',
   })
   // @IsDob()

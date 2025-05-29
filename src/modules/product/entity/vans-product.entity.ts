@@ -36,6 +36,9 @@ export class VansProduct {
   @Column({ nullable: false })
   quantity: number;
 
+  @Column({ nullable: false })
+  return_percent: number;
+
   @Column('string', { nullable: true })
   product_id: string;
 

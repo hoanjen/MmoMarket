@@ -81,13 +81,11 @@ export class UserService {
   }
 
   async createUser(createUserInput: CreateUserDto) {
-    const { email, password, first_name, last_name, gender, phone_number, username, cover_image, avatar, dob } =
-      createUserInput;
+    const { email, password, first_name, last_name, gender, username, cover_image, avatar, dob } = createUserInput;
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
+      .where('user.email = :email OR user.username = :username', {
         email,
-        phone_number,
         username,
       })
       .getOne();
@@ -109,7 +107,6 @@ export class UserService {
         gender,
         last_name,
         username,
-        phone_number,
         google_id: '123',
         dob,
       });
@@ -158,14 +155,12 @@ export class UserService {
   }
 
   async createAdminByAdmin(createUserInput: CreateUserDto) {
-    const { email, password, first_name, last_name, gender, phone_number, username, cover_image, avatar, dob } =
-      createUserInput;
+    const { email, password, first_name, last_name, gender, username, cover_image, avatar, dob } = createUserInput;
 
     const checkUserExisted = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.email = :email OR user.phone_number = :phone_number OR user.username = :username', {
+      .where('user.email = :email OR user.username = :username', {
         email,
-        phone_number,
         username,
       })
       .getOne();
@@ -187,7 +182,6 @@ export class UserService {
         gender,
         last_name,
         username,
-        phone_number,
         google_id: '123',
         dob,
       });

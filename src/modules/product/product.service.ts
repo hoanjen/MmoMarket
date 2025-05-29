@@ -54,6 +54,7 @@ export class ProductService {
       .createQueryBuilder('product')
       .where('product.id = :product_id', { product_id })
       .leftJoinAndSelect('product.vans_products', 'vans_product')
+      .leftJoinAndSelect('product.user', 'user')
       .getOne();
 
     return ReturnCommon({
@@ -212,5 +213,22 @@ export class ProductService {
   async updateProduct(user_id: string, getProductDetailInput: GetProductDetailDto, data: UpdateProductDto) {
     const { product_id } = getProductDetailInput;
     return this.productRepository.update({ id: product_id, user_id }, { ...data });
+  }
+
+  async getOrdersByMerchant(user_id: string, limit: number, page: number) {
+    const vlimit = limit ? limit : 100;
+    const vpage = page ? page : 1;
+    const skip = (vpage - 1) * vlimit;
+    const orders = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.user_id = :user_id', { user_id })
+      .leftJoinAndSelect('product.vans_products', 'vans_product')
+      .leftJoinAndSelect('vans_product.orders', 'orders')
+      .orderBy('orders.created_at', 'DESC')
+      .take(vlimit)
+      .skip(skip)
+      .getRawMany();
+
+    return orders;
   }
 }
