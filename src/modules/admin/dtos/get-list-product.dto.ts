@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
 
 export class GetListProductDto {
   @ApiProperty({
@@ -31,4 +31,13 @@ export class GetHistoryDto {
   @IsNumber()
   @IsOptional()
   readonly page: number;
+}
+
+export class OrderId {
+  @ApiProperty({
+    example: '12214affqraw123',
+    required: true,
+  })
+  @IsUUID()
+  readonly order_id: string;
 }

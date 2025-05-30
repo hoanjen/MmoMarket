@@ -4,7 +4,7 @@ import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { AdminService } from './admin.service';
 import { GetOverviewDashboardDto } from './dtos/get-overview-dashboard.dto';
 import { GetListUserDto } from './dtos/get-list-user.dto';
-import { GetHistoryDto, GetListProductDto } from './dtos/get-list-product.dto';
+import { GetHistoryDto, GetListProductDto, OrderId } from './dtos/get-list-product.dto';
 
 @ApiTags('Admin')
 @Roles(Role.Admin)
@@ -67,13 +67,13 @@ export class AdminController {
 
   @Post('return-money-for-user')
   @ApiOperation({ summary: 'Return money for user by admin' })
-  async returnMoneyForUserByAdmin(@Query() order_id: string) {
+  async returnMoneyForUserByAdmin(@Query() { order_id }: OrderId) {
     return this.adminService.returnMoneyForUserByAdmin(order_id);
   }
 
   @Post('return-money-for-merchent')
   @ApiOperation({ summary: 'Return money for merchant by admin' })
-  async returnMoneyForMerchantByAdmin(@Query() order_id: string) {
+  async returnMoneyForMerchantByAdmin(@Query() { order_id }: OrderId) {
     return this.adminService.returnMoneyForMerchantByAdmin(order_id);
   }
 }
