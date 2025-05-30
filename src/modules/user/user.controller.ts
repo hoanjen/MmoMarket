@@ -16,7 +16,7 @@ import { IsPublic, Role, Roles } from 'src/common/decorators/decorator.common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUserByIdDto } from './dtos/find-user-by-id.dto';
-import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { ForgotPassword, UpdateProfileDto } from './dtos/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Gateway } from '../gateway/app.gateway';
 
@@ -51,5 +51,12 @@ export class UserController {
   @ApiOperation({ summary: 'update profile by token' })
   async updateProfile(@Request() req: any, @Body() updateProfileInput: UpdateProfileDto) {
     return await this.userService.updateProfile(req, updateProfileInput);
+  }
+
+  @IsPublic()
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Forgort password' })
+  async forgotPassword(@Body() forgotPasswordInput: ForgotPassword) {
+    return await this.userService.forgotPassword(forgotPasswordInput);
   }
 }

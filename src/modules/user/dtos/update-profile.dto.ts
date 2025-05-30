@@ -85,3 +85,28 @@ export class UpdateProfileDto {
   @IsOptional()
   readonly phone_number: string;
 }
+
+export class ForgotPassword {
+  @ApiProperty({
+    example: 'email',
+    required: true,
+  })
+  @IsEmail()
+  readonly email: string;
+
+  @ApiProperty({
+    example: 'new password',
+    required: true,
+  })
+  @IsString()
+  readonly new_password: string;
+
+  @ApiProperty({
+    example: '123456',
+  })
+  @IsString()
+  @MinLength(6)
+  @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  readonly otp: string;
+}
