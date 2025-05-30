@@ -63,7 +63,34 @@ export class OtpService {
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
       data: {},
-      message: 'Send mail success, check your mail !!',
+      message: 'Gửi email thành công vui lòng kiểm tra email !!!',
+    });
+  }
+
+  async sendOtpNormal(sendOtpInput: SendOtpDto) {
+    const { email } = sendOtpInput;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('User not exist !');
+    }
+    const otp = Math.round(Math.random() * 1000000).toString(10);
+
+    await this.redisCacheService.set(`otp:${email}`, otp, 300);
+    await this.mailerService.sendMail({
+      to: sendOtpInput.email, // list of receivers
+      from: process.env.MAIL_USER, // sender address
+      subject: 'OTP', // Subject line
+      template: './sendMail.hbs',
+      context: {
+        otp: otp,
+        url: 'iahdiahdi',
+      },
+    });
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: {},
+      message: 'Gửi email thành công vui lòng kiểm tra email !!!',
     });
   }
 }

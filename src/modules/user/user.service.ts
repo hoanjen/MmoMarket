@@ -12,9 +12,10 @@ import { EResponse } from 'src/common/interface.common';
 import { USER_ROLE } from './user.constant';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FindUserByIdDto } from './dtos/find-user-by-id.dto';
-import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { ForgotPassword, UpdateProfileDto } from './dtos/update-profile.dto';
 import { Balance } from '../payment/entity/balance.entity';
 import { relative } from 'path';
+import { OtpService } from '../otp/otp.service';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,7 @@ export class UserService {
     private readonly roleRepository: Repository<Role>,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly otpService: OtpService,
   ) {}
 
   async findUserByIdInternal(user_id: string) {
@@ -306,6 +308,25 @@ export class UserService {
         user: updatedUser,
       },
       message: 'update profile successfully',
+    });
+  }
+
+  async forgotPassword(forgotPasswordInput: ForgotPassword) {
+    const { email, new_password, otp } = forgotPasswordInput;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('Không tìm thấy user');
+    }
+    await this.otpService.veryOtp(email, Number(otp));
+
+    const password = await this.passwordRepository.findOne({ where: { user_id: user.id } });
+    password.password = new_password;
+    await this.passwordRepository.save(password);
+    return ReturnCommon({
+      statusCode: HttpStatus.OK,
+      status: EResponse.SUCCESS,
+      data: '',
+      message: 'Cập nhật mật khẩu thành công vui lòng đăng nhập lại',
     });
   }
 }

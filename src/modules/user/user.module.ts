@@ -6,9 +6,10 @@ import { User } from './entity/user.entity';
 import { Password } from './entity/password.entity';
 import { Role } from './entity/role.entity';
 import { GatewayModule } from '../gateway/gateway.module';
+import { OtpModule } from '../otp/otp.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Password, Role]), GatewayModule],
+  imports: [TypeOrmModule.forFeature([User, Password, Role]), GatewayModule, OtpModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
