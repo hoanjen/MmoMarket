@@ -222,8 +222,9 @@ export class ProductService {
     const orders = await this.productRepository
       .createQueryBuilder('product')
       .where('product.user_id = :user_id', { user_id })
-      .leftJoinAndSelect('product.vans_products', 'vans_product')
-      .leftJoinAndSelect('vans_product.orders', 'orders')
+      .innerJoinAndSelect('product.vans_products', 'vans_product')
+      .innerJoinAndSelect('vans_product.orders', 'orders')
+      .innerJoinAndSelect('orders.reports', 'reports')
       .orderBy('orders.created_at', 'DESC')
       .take(vlimit)
       .skip(skip)

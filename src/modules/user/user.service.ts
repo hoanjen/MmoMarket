@@ -318,9 +318,10 @@ export class UserService {
       throw new BadRequestException('Không tìm thấy user');
     }
     await this.otpService.veryOtp(email, Number(otp));
-
+    const salt = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(new_password, salt);
     const password = await this.passwordRepository.findOne({ where: { user_id: user.id } });
-    password.password = new_password;
+    password.password = hashPassword;
     await this.passwordRepository.save(password);
     return ReturnCommon({
       statusCode: HttpStatus.OK,
