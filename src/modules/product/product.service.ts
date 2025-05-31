@@ -219,7 +219,7 @@ export class ProductService {
     const vlimit = limit ? limit : 100;
     const vpage = page ? page : 1;
     const skip = (vpage - 1) * vlimit;
-    const orders = await this.productRepository
+    const [orders, total] = await this.productRepository
       .createQueryBuilder('product')
       .where('product.user_id = :user_id', { user_id })
       .innerJoinAndSelect('product.vans_products', 'vans_product')
@@ -228,8 +228,8 @@ export class ProductService {
       .orderBy('orders.created_at', 'DESC')
       .take(vlimit)
       .skip(skip)
-      .getRawMany();
+      .getManyAndCount();
 
-    return orders;
+    return { orders, total };
   }
 }

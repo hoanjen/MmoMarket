@@ -169,11 +169,17 @@ export class OrderService {
   async getOrderByMerchant(user_id: string, getOrdersInput: GetOrdersDto) {
     const { limit, page } = getOrdersInput;
 
-    const orders = await this.productService.getOrdersByMerchant(user_id, limit, page);
+    const { orders, total } = await this.productService.getOrdersByMerchant(user_id, limit, page);
+
+    const vlimit = limit ? limit : 100;
+    const vpage = page ? page : 1;
+    const totalPages = Math.ceil(total / vlimit);
+    const nextPage = vpage < totalPages ? vpage + 1 : null;
+    const previousPage = vpage > 1 ? vpage - 1 : null;
 
     return ReturnCommon({
       message: 'Get orders success',
-      data: orders,
+      data: { orders, previousPage, totalPages, nextPage, currentPage: vpage, totalDocs: total },
       statusCode: HttpStatus.OK,
       status: EResponse.SUCCESS,
     });
