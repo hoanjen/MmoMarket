@@ -224,7 +224,7 @@ export class ProductService {
       .where('product.user_id = :user_id', { user_id })
       .innerJoinAndSelect('product.vans_products', 'vans_product')
       .innerJoinAndSelect('vans_product.orders', 'orders')
-      .innerJoinAndSelect('orders.reports', 'reports')
+      .leftJoinAndSelect('orders.reports', 'reports')
       .orderBy('orders.created_at', 'DESC')
       .take(vlimit)
       .skip(skip)
